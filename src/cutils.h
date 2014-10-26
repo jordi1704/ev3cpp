@@ -8,10 +8,7 @@
 #ifndef CUTILS_H_
 #define CUTILS_H_
 
-
 std::string ToString (int Value);
-void msWait (int ms);
-void LogDebug(std::string Message);
-
+void WaitForMilliseconds (int ms);
 
 #endif /* CUTILS_H_ */
