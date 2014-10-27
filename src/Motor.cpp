@@ -42,7 +42,7 @@ Motor::~Motor ()
 
 Position_t Motor::GetPosition()
 {
-  Position_t Position=atoi(GetDeviceParameter(_POSITION_).c_str());
+  Position_t Position=atoi(GetDeviceParameter(POSITION).c_str());
   Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> GetPosition: "+
         ToString(Position));
   return Position;
@@ -50,7 +50,7 @@ Position_t Motor::GetPosition()
 
 void Motor::ResetPosition()
 {
-  this->SetDeviceParameter(_POSITION_,"0");
+  this->SetDeviceParameter(POSITION,"0");
   Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> ResetPosition");
 }
 
@@ -111,7 +111,7 @@ void Motor::RunForever(Power_t Power)
 void Motor::RunForTime(Power_t Power, Time_t Duration)
 {
   this->SetDeviceParameter(sRunMode[_RUN_MODES_],sRunMode[RUN_FOR_TIME]);
-  this->SetDeviceParameter(_TIME_SP_,ToString(Duration));
+  this->SetDeviceParameter(TIME_SP,ToString(Duration));
   this->SetSpeed(Power);
   this->SetDeviceParameter(sState[_STATE_MODES_],sState[RUN]);
   Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> RunForTime: "+
@@ -121,7 +121,7 @@ void Motor::RunForTime(Power_t Power, Time_t Duration)
 void Motor::RunToPosition(Power_t Power, Position_t Position)
 {
   this->SetDeviceParameter(sRunMode[_RUN_MODES_],sRunMode[RUN_TO_POSITION]);
-  this->SetDeviceParameter(_POSITION_SP_,ToString(Position));
+  this->SetDeviceParameter(POSITION_SP,ToString(Position));
   this->SetSpeed(Power);
   this->SetDeviceParameter(sState[_STATE_MODES_],sState[RUN]);
   Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> RunToPosition: "+

@@ -16,6 +16,9 @@ int main()
   // Wait until touch sensor is pressed to stop the motor
   while(!myTouch->IsPressed());
 
+  // Stop the motor
+  myMotor->Stop();
+
   return(0);
 
 }

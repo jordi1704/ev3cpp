@@ -28,13 +28,14 @@ enum run_mode_t  {RUN_FOREVER, RUN_FOR_TIME, RUN_TO_POSITION, _RUN_MODES_};
 const string sRunMode[_RUN_MODES_+1]={"forever","time","position","run_mode"};
 
 enum reg_mode_t {REG_ON, REG_OFF, _REG_MODES_};
+// TODO eliminate underscores
 const string sRegMode[_REG_MODES_+1]={"on","off","regulation_mode"};
 
 const string sDutyCycle("duty_cycle_sp");
 const string sPulsesPerSec("pulses_per_second_sp");
-const string _TIME_SP_("time_sp");
-const string _POSITION_("position");
-const string _POSITION_SP_("position_sp");
+const string TIME_SP("time_sp");
+const string POSITION("position");
+const string POSITION_SP("position_sp");
 // TODO capitalize string names
 
 enum state_t {RUN, STOP, _STATE_MODES_};

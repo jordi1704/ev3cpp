@@ -24,7 +24,6 @@ const DbgLevel_t TACHO_DBG_LVL     = DBG_LVL_2;
 const DbgLevel_t MINITACHO_DBG_LVL = DBG_LVL_2;
 const DbgLevel_t TOUCH_DBG_LVL     = DBG_LVL_2;
 const DbgLevel_t GYRO_DBG_LVL      = DBG_LVL_2;
-//TODO add default device level to each class
 
 class Ev3Device
 {
