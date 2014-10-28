@@ -11,9 +11,8 @@
 #include <dirent.h>
 
 #define MOTOR_PATH    		"/sys/bus/legoev3/devices"
-#define SENSOR_PATH   		"/sys/class/msensor"
-#define PORT_NAME 		"/port_name";
-#define MAX_FILENAME_LENGTH 	64
+#define SENSOR_PATH   		"/sys/class/msensor/"
+#define MAX_FILENAME_LENGTH 	256
 
 /*
  * Ev3Device constructor.
@@ -25,8 +24,8 @@
 Ev3Device::Ev3Device (Port_t Port, DataLogger* Logger)
 {
   m_DeviceID=" EV3DEVICE:"+sPortName[Port];
-  m_DevicePath=GetDevicePath(Port);
   m_Logger=Logger;
+  m_DevicePath=GetDevicePath(Port);
   Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+"-> Constructed EV3 device");
 }
 
@@ -46,11 +45,8 @@ Ev3Device::~Ev3Device ()
 string Ev3Device::GetDevicePath(Port_t Port)
 {
   char PortPath[MAX_FILENAME_LENGTH];
-  const char SensorParameter[]=PORT_NAME;
-
+  char PortName[MAX_FILENAME_LENGTH];
   string sResponse;
-  string sOutPort;
-
   DIR *Directory;
   struct dirent* DirectoryEntry;
 
@@ -60,18 +56,22 @@ string Ev3Device::GetDevicePath(Port_t Port)
     case IN_2:
     case IN_3:
     case IN_4:
-      Directory=opendir(SENSOR_PATH);
       // Poll the "port_name" property of every sensor under /sys/class/msensor
       // until the specified input port is found
+      Directory=opendir(SENSOR_PATH);
       while((DirectoryEntry=readdir(Directory))!=NULL){
-	strcpy(PortPath,DirectoryEntry->d_name);
-	strcat(PortPath,SensorParameter);
-	ifstream inf(PortPath);
-	getline(inf,sResponse);
-	if(sResponse==sPortName[Port]){
-	  Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+"-> Got file path:"
-			+DirectoryEntry->d_name);
-	  return DirectoryEntry->d_name;
+	if(strstr(DirectoryEntry->d_name,"sensor")){
+	  strcpy(PortPath,SENSOR_PATH);
+	  strcat(PortPath,DirectoryEntry->d_name);
+	  strcpy(PortName,PortPath);
+	  strcat(PortName,"/port_name");
+	  ifstream inf(PortName);
+	  getline(inf,sResponse);
+	  if(sResponse==sPortName[Port]){
+	    Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+"-> Got file path:"
+			  +PortPath);
+	    return PortPath;
+	  }
 	}
       }
       break;
@@ -80,13 +80,23 @@ string Ev3Device::GetDevicePath(Port_t Port)
     case OUT_B:
     case OUT_C:
     case OUT_D:
-      sOutPort=MOTOR_PATH+string("/")+sPortName[Port]+string("/")+
-               sPortName[Port]+string(":ev3-tacho-motor/tacho-motor");
-      Directory=opendir(sOutPort.c_str());
-      DirectoryEntry=readdir(Directory);
-      Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+"-> Got file path:"
-            	            +DirectoryEntry->d_name);
-      return DirectoryEntry->d_name;
+      strcpy(PortName,MOTOR_PATH);
+      strcat(PortName,"/");
+      strcat(PortName,sPortName[Port].c_str());
+      strcat(PortName,"/");
+      strcat(PortName,sPortName[Port].c_str());
+      strcat(PortName,":ev3-tacho-motor/tacho-motor/");
+      strcpy(PortPath,PortName);
+      Directory=opendir(PortName);
+      while((DirectoryEntry=readdir(Directory))!=NULL){
+	if(strstr(DirectoryEntry->d_name,"motor")){
+	    strcat(PortPath,DirectoryEntry->d_name);
+	    Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+"-> Got file path:"
+	                	            +PortPath);
+	    return PortPath;
+	}
+      }
+      break;
     default:
       break;
   }

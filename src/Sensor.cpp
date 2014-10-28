@@ -10,7 +10,7 @@
 Sensor::Sensor (Port_t Port, DataLogger* Logger) : Ev3Device(Port,Logger)
 {
   m_DeviceID=" SENSOR:"+sPortName[Port];
-  Trace(m_Logger,SENSOR_DBG_LVL,m_DeviceID+"-> Constructed sensor");
+  Trace(m_Logger,SENSOR_DBG_LVL,m_DeviceID+"-> Constructed Sensor");
 }
 
 Sensor::~Sensor ()
@@ -27,15 +27,15 @@ void Sensor::SetSensorMode (string Mode)
 string Sensor::GetSensorMode()
 {
   string Mode=GetDeviceParameter(MODE);
-  Trace(m_Logger,SENSOR_DBG_LVL,"-> GetSensorMode: "+Mode);
+  Trace(m_Logger,SENSOR_DBG_LVL,m_DeviceID+"-> GetSensorMode: "+Mode);
   return Mode;
 }
 
 string Sensor::GetSensorValue(string Value)
 {
   string SensorValue=GetDeviceParameter(Value);
-  Trace(m_Logger,SENSOR_DBG_LVL,"-> GetSensorValue: "+Value+"  value: "+
-        SensorValue);
+  Trace(m_Logger,SENSOR_DBG_LVL,m_DeviceID+"-> GetSensorValue: "+
+        Value+"  value: "+SensorValue);
   return SensorValue;
 }
 
