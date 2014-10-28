@@ -21,24 +21,17 @@ typedef signed char Power_t;
 #define MAX_SPEED_BIG_MOTOR     900
 #define MAX_SPEED_SMALL_MOTOR  1200
 
-enum stop_mode_t {COAST, BRAKE, HOLD, _STOP_MODES_};
-const string sStopMode[_STOP_MODES_+1]={"coast","brake","hold" ,"stop_mode"};
+enum stop_mode_t {COAST, BRAKE, HOLD, STOP_MODES};
+const string sStopMode[STOP_MODES+1]={"coast","brake","hold" ,"stop_mode"};
 
-enum run_mode_t  {RUN_FOREVER, RUN_FOR_TIME, RUN_TO_POSITION, _RUN_MODES_};
-const string sRunMode[_RUN_MODES_+1]={"forever","time","position","run_mode"};
+enum run_mode_t  {RUN_FOREVER, RUN_FOR_TIME, RUN_TO_POSITION, RUN_MODES};
+const string sRunMode[RUN_MODES+1]={"forever","time","position","run_mode"};
 
-enum reg_mode_t {REG_ON, REG_OFF, _REG_MODES_};
-const string sRegMode[_REG_MODES_+1]={"on","off","regulation_mode"};
+enum reg_mode_t {REG_ON, REG_OFF, REG_MODES};
+const string sRegMode[REG_MODES+1]={"on","off","regulation_mode"};
 
-const string sDutyCycle("duty_cycle_sp");
-const string sPulsesPerSec("pulses_per_second_sp");
-const string _TIME_SP_("time_sp");
-const string _POSITION_("position");
-const string _POSITION_SP_("position_sp");
-// TODO capitalize string names
-
-enum state_t {RUN, STOP, _STATE_MODES_};
-const string sState[_STATE_MODES_+1]={"1","0","run"};
+enum state_t {RUN, STOP, STATE_MODES};
+const string sState[STATE_MODES+1]={"1","0","run"};
 
 
 class Motor : public Ev3Device
