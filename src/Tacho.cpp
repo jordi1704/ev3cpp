@@ -10,7 +10,8 @@
 
 Tacho::Tacho (Port_t Port,DataLogger* Logger) : Motor(Port,Logger)
 {
-  cout << "Constructed Tacho motor on port " << sPortName[Port] << endl;
+  m_DeviceID=" TACHO:"+sPortName[Port];
+  Trace(m_Logger,TACHO_DBG_LVL,m_DeviceID+"-> Constructed Tacho");
 }
 
 Tacho::~Tacho ()

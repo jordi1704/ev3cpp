@@ -9,8 +9,13 @@
 #include "Ev3Device.h"
 #include "cutils.h"
 
-
 using namespace std;
+
+const string DUTY_CYCLE_SP("duty_cycle_sp");
+const string PULSES_PER_SEC_SP("pulses_per_second_sp");
+const string TIME_SP("time_sp");
+const string POSITION("position");
+const string POSITION_SP("position_sp");
 
 /*
  * Motor constructor
@@ -68,11 +73,11 @@ void Motor::SetSpeed(Power_t Power)
   switch (m_RegMode) {
     case REG_ON:
       Speed=ToString(CalculateSpeed(Power));
-      Parameter=sPulsesPerSec;
+      Parameter=PULSES_PER_SEC_SP;
       break;
     case REG_OFF:
       Speed=ToString(Power);
-      Parameter=sDutyCycle;
+      Parameter=DUTY_CYCLE_SP;
       break;
     default:
       break;
@@ -83,7 +88,7 @@ void Motor::SetSpeed(Power_t Power)
 
 void Motor::SetRegulationMode(reg_mode_t RegMode)
 {
-  this->SetDeviceParameter(sRegMode[_REG_MODES_],sRegMode[RegMode]);
+  this->SetDeviceParameter(sRegMode[REG_MODES],sRegMode[RegMode]);
   m_RegMode=this->GetRegulationMode();
   Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> SetRegulationMode: "+
         sRegMode[RegMode]);
@@ -91,7 +96,7 @@ void Motor::SetRegulationMode(reg_mode_t RegMode)
 
 reg_mode_t Motor::GetRegulationMode()
 {
-  string sRegulationMode=GetDeviceParameter(sRegMode[_REG_MODES_]);
+  string sRegulationMode=GetDeviceParameter(sRegMode[REG_MODES]);
   Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> GetRegulationMode: "+
         sRegulationMode);
   if (sRegulationMode==sRegMode[REG_ON])
@@ -102,35 +107,35 @@ reg_mode_t Motor::GetRegulationMode()
 
 void Motor::RunForever(Power_t Power)
 {
-  this->SetDeviceParameter(sRunMode[_RUN_MODES_],sRunMode[RUN_FOREVER]);
+  this->SetDeviceParameter(sRunMode[RUN_MODES],sRunMode[RUN_FOREVER]);
   this->SetSpeed(Power);
-  this->SetDeviceParameter(sState[_STATE_MODES_],sState[RUN]);
+  this->SetDeviceParameter(sState[STATE_MODES],sState[RUN]);
   Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> RunForever: "+ToString(Power));
 }
 
 void Motor::RunForTime(Power_t Power, Time_t Duration)
 {
-  this->SetDeviceParameter(sRunMode[_RUN_MODES_],sRunMode[RUN_FOR_TIME]);
+  this->SetDeviceParameter(sRunMode[RUN_MODES],sRunMode[RUN_FOR_TIME]);
   this->SetDeviceParameter(TIME_SP,ToString(Duration));
   this->SetSpeed(Power);
-  this->SetDeviceParameter(sState[_STATE_MODES_],sState[RUN]);
+  this->SetDeviceParameter(sState[STATE_MODES],sState[RUN]);
   Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> RunForTime: "+
         ToString(Power)+"  Duration: "+ToString(Duration));
 }
 
 void Motor::RunToPosition(Power_t Power, Position_t Position)
 {
-  this->SetDeviceParameter(sRunMode[_RUN_MODES_],sRunMode[RUN_TO_POSITION]);
+  this->SetDeviceParameter(sRunMode[RUN_MODES],sRunMode[RUN_TO_POSITION]);
   this->SetDeviceParameter(POSITION_SP,ToString(Position));
   this->SetSpeed(Power);
-  this->SetDeviceParameter(sState[_STATE_MODES_],sState[RUN]);
+  this->SetDeviceParameter(sState[STATE_MODES],sState[RUN]);
   Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> RunToPosition: "+
           ToString(Power)+"  Position: "+ToString(Position));
 }
 
 void Motor::Stop()
 {
-  this->SetDeviceParameter(sState[_STATE_MODES_],sState[STOP]);
+  this->SetDeviceParameter(sState[STATE_MODES],sState[STOP]);
   Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> Stop");
 }
 

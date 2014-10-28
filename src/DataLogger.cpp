@@ -39,8 +39,6 @@ void DataLogger::LogMessage(DbgLevel_t DbgLevel, string Msg)
     // CSV format
     strftime(buffer,80,"%d-%m-%Y,%I:%M:%S,",timeinfo);
     m_obuf << string(buffer) << Msg << endl;
-    //TODO remove console output after testing
-    cout << string(buffer) << Msg << endl;
   }
 }
 
