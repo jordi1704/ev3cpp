@@ -19,10 +19,10 @@ const string sPortName[_PORTS_NUM_]={  "in1", "in2", "in3", "in4",
 const DbgLevel_t EV3DEVICE_DBG_LVL = DBG_LVL_0;
 const DbgLevel_t MOTOR_DBG_LVL     = DBG_LVL_1;
 const DbgLevel_t SENSOR_DBG_LVL	   = DBG_LVL_1;
-const DbgLevel_t TACHO_DBG_LVL     = DBG_LVL_1;
-const DbgLevel_t MINITACHO_DBG_LVL = DBG_LVL_1;
-const DbgLevel_t TOUCH_DBG_LVL     = DBG_LVL_1;
-const DbgLevel_t GYRO_DBG_LVL      = DBG_LVL_1;
+const DbgLevel_t TACHO_DBG_LVL     = DBG_LVL_2;
+const DbgLevel_t MINITACHO_DBG_LVL = DBG_LVL_2;
+const DbgLevel_t TOUCH_DBG_LVL     = DBG_LVL_2;
+const DbgLevel_t GYRO_DBG_LVL      = DBG_LVL_2;
 
 class Ev3Device
 {
