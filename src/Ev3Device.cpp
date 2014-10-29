@@ -10,7 +10,7 @@
 #include <iostream>
 #include <dirent.h>
 
-#define MOTOR_PATH    		"/sys/bus/legoev3/devices"
+#define MOTOR_PATH    		"/sys/class/tacho-motor/"
 #define SENSOR_PATH   		"/sys/class/msensor/"
 #define MAX_FILENAME_LENGTH 	256
 
@@ -49,58 +49,44 @@ string Ev3Device::GetDevicePath(Port_t Port)
   string sResponse;
   DIR *Directory;
   struct dirent* DirectoryEntry;
+  string deviceType;
+  string deviceTypePath;
 
+  // Determine sensor or motor path. Everything connected to an IN port is
+  // assumed to be a sensor. Conversely, OUT connected devices are assumed
+  // to be motors
   switch (Port) {
-    // Find sensor path name
-    case IN_1:
-    case IN_2:
-    case IN_3:
-    case IN_4:
-      // Poll the "port_name" property of every sensor under /sys/class/msensor
-      // until the specified input port is found
-      Directory=opendir(SENSOR_PATH);
-      while((DirectoryEntry=readdir(Directory))!=NULL){
-	if(strstr(DirectoryEntry->d_name,"sensor")){
-	  strcpy(PortPath,SENSOR_PATH);
-	  strcat(PortPath,DirectoryEntry->d_name);
-	  strcpy(PortName,PortPath);
-	  strcat(PortName,"/port_name");
-	  ifstream inf(PortName);
-	  getline(inf,sResponse);
-	  if(sResponse==sPortName[Port]){
-	    Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+"-> Got file path:"
-			  +PortPath);
-	    return PortPath;
-	  }
-	}
-      }
+    case IN_1:case IN_2:case IN_3:case IN_4:
+      deviceType="sensor";
+      deviceTypePath=SENSOR_PATH;
       break;
-    // Find motor path name
-    case OUT_A:
-    case OUT_B:
-    case OUT_C:
-    case OUT_D:
-      strcpy(PortName,MOTOR_PATH);
-      strcat(PortName,"/");
-      strcat(PortName,sPortName[Port].c_str());
-      strcat(PortName,"/");
-      strcat(PortName,sPortName[Port].c_str());
-      strcat(PortName,":ev3-tacho-motor/tacho-motor/");
-      strcpy(PortPath,PortName);
-      Directory=opendir(PortName);
-      while((DirectoryEntry=readdir(Directory))!=NULL){
-	if(strstr(DirectoryEntry->d_name,"motor")){
-	    strcat(PortPath,DirectoryEntry->d_name);
-	    Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+"-> Got file path:"
-	                	            +PortPath);
-	    return PortPath;
-	}
-      }
+    case OUT_A:case OUT_B:case OUT_C:case OUT_D:
+      deviceType="tacho-motor";
+      deviceTypePath=MOTOR_PATH;
       break;
     default:
       break;
   }
-  // Log error condition, terminate logger and exit program
+  // Poll the "port_name" property of every device until it matches the
+  // requested Port connection
+  Directory=opendir(deviceTypePath.c_str());
+  while((DirectoryEntry=readdir(Directory))!=NULL){
+    if(strstr(DirectoryEntry->d_name,deviceType.c_str())){
+      strcpy(PortPath,deviceTypePath.c_str());
+      strcat(PortPath,DirectoryEntry->d_name);
+      strcpy(PortName,PortPath);
+      strcat(PortName,"/port_name");
+      ifstream inf(PortName);
+      getline(inf,sResponse);
+      if(sResponse==sPortName[Port]){
+	Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+"-> Got file path:"
+		      +PortPath);
+	return PortPath;
+      }
+    }
+  }
+  // If there is not match, log error condition, terminate logger
+  // and exit program
   Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+
 	" ***ERROR*** Attempting to attach device to port: "+sPortName[Port]);
   m_Logger->~DataLogger();
