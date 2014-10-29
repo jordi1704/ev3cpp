@@ -12,15 +12,15 @@
 
 class MotorPair
 {
-private:
-Tacho* MotorL;
-Tacho* MotorR;
 public:
   MotorPair (Port_t LeftPort, Port_t RightPort, DataLogger* Logger=NULL);
-  void Turn(float Angle, Power_t Power);
-  void Pivot(Power_t Power);
   virtual
   ~MotorPair ();
+  void Turn(float Angle, Power_t Power);
+  void Pivot(Power_t Power);
+private:
+  Tacho* MotorL;
+  Tacho* MotorR;
 };
 
 #endif /* MOTORPAIR_H_ */
