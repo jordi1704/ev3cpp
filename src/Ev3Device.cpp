@@ -70,6 +70,12 @@ string Ev3Device::GetDevicePath(Port_t Port)
   // Poll the "port_name" property of every device until it matches the
   // requested Port connection
   Directory=opendir(deviceTypePath.c_str());
+  if(!Directory){
+      Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+
+      	" ***ERROR*** No device available on: "+deviceTypePath);
+        m_Logger->~DataLogger();
+        exit(-1);
+  }
   while((DirectoryEntry=readdir(Directory))!=NULL){
     if(strstr(DirectoryEntry->d_name,deviceType.c_str())){
       strcpy(PortPath,deviceTypePath.c_str());
