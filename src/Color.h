@@ -40,12 +40,12 @@ public:
   int GetAmbient();
 };
 
-class ColorSensor : private Color
+class Colorimeter : private Color
 {
 public:
-  ColorSensor(Port_t Port, DataLogger* Logger=NULL);
+  Colorimeter(Port_t Port, DataLogger* Logger=NULL);
   virtual
-  ~ColorSensor();
+  ~Colorimeter();
   Color_t GetColor();
 };
 

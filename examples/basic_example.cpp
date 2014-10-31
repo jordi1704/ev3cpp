@@ -19,7 +19,7 @@ int main()
   // there will be no logged info about touch sensor
   Touch* myTouch=new Touch(IN_4);
 
-  LightSensor* myReflected=new LightSensor(IN_3);
+  LightSensor* myReflected=new LightSensor(IN_3,myLogger);
 
   // Start motor at power 50%
   //myMotor->RunForever(50);
@@ -28,7 +28,31 @@ int main()
   while(!myTouch->IsPressed()){
       cout << "Reflected value is: " << myReflected->GetReflected() << endl;
       usleep(ONE_SECOND);
+      cout << "Ambient value is: " << myReflected->GetAmbient() << endl;
+      usleep(ONE_SECOND);
   }
+
+  cout << "Changing mode" << endl;
+
+  myReflected->~LightSensor();
+
+  Colorimeter* myColorimeter=new Colorimeter(IN_3,myLogger);
+  string color;
+  Color_t colordetected;
+  usleep(5*ONE_SECOND);
+
+  while(!myTouch->IsPressed()){
+      colordetected=myColorimeter->GetColor();
+      color=sColor[colordetected];
+      cout << color <<endl;
+      usleep(ONE_SECOND);
+  }
+
+
+
+
+
+  //TODO complete example
 
   // Stop the motor
   //myMotor->Stop();

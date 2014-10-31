@@ -6,6 +6,7 @@
  */
 
 #include "Color.h"
+#include "cutils.h"
 #include <iostream>
 
 Color::Color (Port_t Port, ColorMode_t Mode, DataLogger* Logger) :
@@ -14,6 +15,7 @@ Color::Color (Port_t Port, ColorMode_t Mode, DataLogger* Logger) :
   m_DeviceID=" COLOR:"+sPortName[Port];
   m_ColorMode=Mode;
   SetColorMode(Mode);
+  Trace(m_Logger,COLOR_DBG_LVL,m_DeviceID+"-> Color sensor constructed");
 }
 
 Color::~Color ()
@@ -23,12 +25,16 @@ Color::~Color ()
 void Color::SetColorMode(ColorMode_t Mode)
 {
   Sensor::SetSensorMode(sColorMode[Mode]);
+  m_ColorMode=Mode;
+  Trace(m_Logger,COLOR_DBG_LVL,m_DeviceID+"-> SetColorMode:"+sColorMode[Mode]);
 }
 
 LightSensor::LightSensor (Port_t Port, DataLogger* Logger) :
     Color(Port,REFLECTED,Logger)
 {
   m_DeviceID=" LIGHT_SENSOR:"+sPortName[Port];
+  Trace(m_Logger,LIGHTSENSOR_DBG_LVL,m_DeviceID+
+        "-> LightSensor constructed");
 }
 
 LightSensor::~LightSensor()
@@ -37,39 +43,51 @@ LightSensor::~LightSensor()
 
 int LightSensor::GetReflected()
 {
+  int ReflectedValue;
   if(m_ColorMode!=REFLECTED) SetColorMode(REFLECTED);
-  return atoi(GetSensorValue(sColorValue[REFLECTED]).c_str());
+  ReflectedValue=atoi(GetSensorValue(sColorValue[REFLECTED]).c_str());
+  Trace(m_Logger,LIGHTSENSOR_DBG_LVL,m_DeviceID+"-> GetReflected:"+
+        ToString(ReflectedValue));
+  return ReflectedValue;
 }
 
 int LightSensor::GetAmbient()
 {
+  int AmbientValue;
   if(m_ColorMode!=AMBIENT) SetColorMode(AMBIENT);
-  return atoi(GetSensorValue(sColorValue[AMBIENT]).c_str());
+  AmbientValue=atoi(GetSensorValue(sColorValue[REFLECTED]).c_str());
+  Trace(m_Logger,LIGHTSENSOR_DBG_LVL,m_DeviceID+"-> GetAmbient:"+
+        ToString(AmbientValue));
+  return AmbientValue;
 }
 
-ColorSensor::ColorSensor(Port_t Port, DataLogger* Logger) :
+Colorimeter::Colorimeter(Port_t Port, DataLogger* Logger) :
     Color(Port,COLOR,Logger)
 {
-  m_DeviceID=" COLOR_SENSOR:"+sPortName[Port];
+  m_DeviceID=" COLORIMETER:"+sPortName[Port];
+  Trace(m_Logger,COLORIMETER_DBG_LVL,m_DeviceID+"-> Colorimeter constructed");
 }
 
-ColorSensor::~ColorSensor()
+Colorimeter::~Colorimeter()
 {
 }
 
-Color_t ColorSensor::GetColor()
+Color_t Colorimeter::GetColor()
 {
-  string color;
+  unsigned char colorNumber;
+  Color_t ColorDetected;
   if(m_ColorMode!=COLOR) SetColorMode(COLOR);
-  color=Sensor::GetSensorValue(sColorValue[COLOR]);
-  return (color==sColor[NONE]) ? NONE :
-	  (color==sColor[BLACK]) ? BLACK :
-	   (color==sColor[BLUE]) ? BLUE :
-	    (color==sColor[GREEN]) ? GREEN :
-             (color==sColor[YELLOW]) ? YELLOW :
-              (color==sColor[RED]) ? RED :
-               (color==sColor[WHITE]) ? WHITE :
-        	(color==sColor[BROWN]) ? BROWN : NONE;
-
+  colorNumber=atoi(Sensor::GetSensorValue(sColorValue[COLOR]).c_str());
+  Trace(m_Logger,COLORIMETER_DBG_LVL,m_DeviceID+"-> GetColor:"+
+  	sColor[colorNumber]);
+  ColorDetected  = (colorNumber==NONE) ? NONE :
+		    (colorNumber==BLACK) ? BLACK :
+		     (colorNumber==BLUE) ? BLUE :
+		      (colorNumber==GREEN) ? GREEN :
+		       (colorNumber==YELLOW) ? YELLOW :
+			(colorNumber==RED) ? RED :
+			 (colorNumber==WHITE) ? WHITE :
+			  (colorNumber==BROWN) ? BROWN : NONE;
+  return ColorDetected;
 }
 
