@@ -12,7 +12,8 @@
 
 MiniTacho::MiniTacho(Port_t Port,DataLogger* Logger) : Motor(Port,Logger)
 {
-  cout << "Constructed Mini-tacho motor on port " << sPortName[Port] << endl;
+  m_DeviceID=" MINITACHO:"+sPortName[Port];
+  Trace(m_Logger,MINITACHO_DBG_LVL,m_DeviceID+"-> Constructed Minitacho");
 }
 
 
