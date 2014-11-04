@@ -29,7 +29,7 @@ Motor::Motor(Port_t Port, DataLogger* Logger) : Ev3Device(Port,Logger)
   this->SetRegulationMode(REG_ON);
   m_RegMode=REG_ON;
   m_DeviceID=" MOTOR:"+sPortName[Port];
-  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> Constructed regulated motor");
+  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
 /*
@@ -42,21 +42,20 @@ Motor::Motor(Port_t Port, DataLogger* Logger) : Ev3Device(Port,Logger)
 Motor::~Motor ()
 {
   this->Stop();
-  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> Motor stopped and destroyed");
+  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
 Position_t Motor::GetPosition()
 {
   Position_t Position=atoi(GetDeviceParameter(POSITION).c_str());
-  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> GetPosition: "+
-        ToString(Position));
+  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR+ToString(Position));
   return Position;
 }
 
 void Motor::ResetPosition()
 {
   this->SetDeviceParameter(POSITION,"0");
-  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> ResetPosition");
+  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
 int Motor::CalculateSpeed(Power_t Power)
@@ -83,22 +82,20 @@ void Motor::SetSpeed(Power_t Power)
       break;
   }
   this->SetDeviceParameter(Parameter,Speed);
-  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> SetSpeed: "+string(Speed));
+  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR+string(Speed));
 }
 
 void Motor::SetRegulationMode(reg_mode_t RegMode)
 {
   this->SetDeviceParameter(sRegMode[REG_MODES],sRegMode[RegMode]);
   m_RegMode=this->GetRegulationMode();
-  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> SetRegulationMode: "+
-        sRegMode[RegMode]);
+  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR+sRegMode[RegMode]);
 }
 
 reg_mode_t Motor::GetRegulationMode()
 {
   string sRegulationMode=GetDeviceParameter(sRegMode[REG_MODES]);
-  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> GetRegulationMode: "+
-        sRegulationMode);
+  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR+sRegulationMode);
   if (sRegulationMode==sRegMode[REG_ON])
     return REG_ON;
   else
@@ -110,7 +107,7 @@ void Motor::RunForever(Power_t Power)
   this->SetDeviceParameter(sRunMode[RUN_MODES],sRunMode[RUN_FOREVER]);
   this->SetSpeed(Power);
   this->SetDeviceParameter(sState[STATE_MODES],sState[RUN]);
-  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> RunForever: "+ToString(Power));
+  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR+ToString(Power));
 }
 
 void Motor::RunForTime(Power_t Power, Time_t Duration)
@@ -119,8 +116,8 @@ void Motor::RunForTime(Power_t Power, Time_t Duration)
   this->SetDeviceParameter(TIME_SP,ToString(Duration));
   this->SetSpeed(Power);
   this->SetDeviceParameter(sState[STATE_MODES],sState[RUN]);
-  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> RunForTime: "+
-        ToString(Power)+"  Duration: "+ToString(Duration));
+  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR+ToString(Power)+","
+        +ToString(Duration));
 }
 
 void Motor::RunToPosition(Power_t Power, Position_t Position)
@@ -129,15 +126,12 @@ void Motor::RunToPosition(Power_t Power, Position_t Position)
   this->SetDeviceParameter(POSITION_SP,ToString(Position));
   this->SetSpeed(Power);
   this->SetDeviceParameter(sState[STATE_MODES],sState[RUN]);
-  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> RunToPosition: "+
-          ToString(Power)+"  Position: "+ToString(Position));
+  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR+ToString(Power)+","
+        +ToString(Position));
 }
 
 void Motor::Stop()
 {
   this->SetDeviceParameter(sState[STATE_MODES],sState[STOP]);
-  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+"-> Stop");
+  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
-
-
-

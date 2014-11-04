@@ -10,7 +10,7 @@
 
 #include "DataLogger.h"
 
-#define ERROR_STR string("-> ***ERROR*** ")+__FUNCTION__
+#define ERROR_STR string("-> ***ERROR*** ")+__FUNCTION__+string(":")
 #define FUNCT_STR string("-> ")+__FUNCTION__+string(":")
 
 enum Port_t {  IN_1,  IN_2,  IN_3,  IN_4,
