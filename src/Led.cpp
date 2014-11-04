@@ -7,10 +7,11 @@
 
 #include "Led.h"
 
-Led::Led ()
+Led::Led (LedPosition_t LedPosition, LedColor_t LedColor)
 {
   // TODO Auto-generated constructor stub
-
+  m_LedPosition=LedPosition;
+  m_LedColor=LedColor;
 }
 
 Led::~Led ()

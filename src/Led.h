@@ -13,6 +13,7 @@
 enum LedPosition_t {LEFT, RIGHT};
 enum LedColor_t {RED, GREEN};
 
+//TODO consider if it should derive for Ev3Device class.
 class Led
 {
 public:
