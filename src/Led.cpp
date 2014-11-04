@@ -18,3 +18,8 @@ Led::~Led ()
   // TODO Auto-generated destructor stub
 }
 
+void Led::SetLedColor(LedPosition_t LedPosition, LedColor_t LedColor)
+{
+
+}
+

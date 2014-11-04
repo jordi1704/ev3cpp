@@ -10,12 +10,19 @@
 
 #include <Ev3Device.h>
 
-class Led : public Ev3Device
+enum LedPosition_t {LEFT, RIGHT};
+enum LedColor_t {RED, GREEN};
+
+class Led
 {
 public:
-  Led ();
+  Led (LedPosition_t LedPosition, LedColor_t LedColor);
   virtual
   ~Led ();
+  void SetLedColor(LedPosition_t LedPosition, LedColor_t LedColor);
+  LedPosition_t m_LedPosition;
+  LedColor_t m_LedColor;
+  string m_LedPath;
 };
 
 #endif /* LED_H_ */
