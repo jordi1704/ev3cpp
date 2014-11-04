@@ -10,6 +10,9 @@
 
 #include "DataLogger.h"
 
+#define ERROR_STR string("-> ***ERROR*** ")+__FUNCTION__
+#define FUNCT_STR string("-> ")+__FUNCTION__+string(":")
+
 enum Port_t {  IN_1,  IN_2,  IN_3,  IN_4,
               OUT_A, OUT_B, OUT_C, OUT_D, _PORTS_NUM_ };
 
@@ -26,6 +29,7 @@ const DbgLevel_t GYRO_DBG_LVL         = DBG_LVL_2;
 const DbgLevel_t COLOR_DBG_LVL        = DBG_LVL_2;
 const DbgLevel_t COLORIMETER_DBG_LVL  = DBG_LVL_3;
 const DbgLevel_t LIGHTSENSOR_DBG_LVL  = DBG_LVL_3;
+const DbgLevel_t LED_DBG_LVL          = DBG_LVL_3;
 
 
 class Ev3Device

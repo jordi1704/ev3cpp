@@ -6,14 +6,30 @@
  */
 
 #include "Gyro.h"
+#include "cutils.h"
 #include <iostream>
 #include <stdlib.h>
 
 using namespace std;
 
+/*
+ * Gyro constructor
+ */
+Gyro::Gyro(Port_t Port, GyroMode_t Mode, DataLogger* Logger) :
+    Sensor(Port,Logger)
+{
+  m_DeviceID=" GYRO:"+sPortName[Port];
+  SetMode(Mode);
+  Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+FUNCT_STR);
+}
+
+/*
+ * Gyro is reset by changing its mode. However in GYRO-GA mode it is not
+ * possible to reset it this way.
+ */
 void Gyro::Reset()
 {
-  switch (GetMode()) {
+  switch (m_GyroMode) {
     case ANGLE:
       SetMode(RATE);
       SetMode(ANGLE);
@@ -22,38 +38,50 @@ void Gyro::Reset()
       SetMode(ANGLE);
       SetMode(RATE);
     default:
-      cout << "Unable to reset Gyro. Unknown initial mode" << endl;
+      Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+ERROR_STR);
+      m_Logger->~DataLogger();
       exit(1);
       break;
   }
+  Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
+/*
+ * Set mode of Gyro
+ */
 void Gyro::SetMode(GyroMode_t Mode){
   SetSensorMode(sGyroMode[Mode]);
   string actualMode=GetSensorMode();
   if(sGyroMode[Mode]!=actualMode){
-      cout << "Gyro Mode: " << sGyroMode[Mode] << " could not be set" << endl;
-      cout << "Current Mode : " << actualMode << endl;
+      Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+ERROR_STR);
+      m_Logger->~DataLogger();
       exit(1);
   }
   m_GyroMode=Mode;
+  Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+FUNCT_STR+actualMode);
 }
 
 GyroMode_t Gyro::GetMode(){
   string Mode=GetSensorMode();
-  for(int i=0;i<_GYRO_MODES_;++i){
-      if(Mode==sGyroMode[i]) return static_cast<GyroMode_t>(i);
+  for(int i=0;i<GYRO_MODES;++i){
+      if(Mode==sGyroMode[i]){
+	  Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+FUNCT_STR+Mode);
+	  return static_cast<GyroMode_t>(i);
+      }
   }
-  cout << "Unknown Gyro Mode" << endl;
+  Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+ERROR_STR);
+  m_Logger->~DataLogger();
   exit(1);
 }
 
 int Gyro::GetAngle(){
-  //string actualMode=GetSensorMode();
   if (m_GyroMode==ANGLE) {
-      return atoi(GetSensorValue(sGyroValue[ANGLE_VALUE]).c_str());
+      int Angle=atoi(GetSensorValue(sGyroValue[ANGLE_VALUE]).c_str());
+      Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+FUNCT_STR+ToString(Angle));
+      return Angle;
   } else {
-      cout << "Unable to get Gyro becasue not in GYRO-ANG mode " << endl;
+      Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+ERROR_STR);
+      m_Logger->~DataLogger();
       exit(1);
   }
 }
@@ -63,23 +91,25 @@ void Gyro::GetRateAndAngle(int &Rate, int &Angle)
   if (m_GyroMode==ANGLE_AND_RATE) {
     Rate=atoi(GetSensorValue(sGyroValue[GA_RATE]).c_str());
     Angle=atoi(GetSensorValue(sGyroValue[GA_ANGLE]).c_str());
+    Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+FUNCT_STR+
+          ToString(Rate)+","+ToString(Angle));
   } else {
-    cout << "Unable to get angle/rate because not in GYRO-G&A mode" << endl;
+    Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+ERROR_STR);
+    m_Logger->~DataLogger();
     exit(1);
   }
 }
 
 int Gyro::GetRate(){
   if (m_GyroMode==RATE) {
-        return atoi(GetSensorValue(sGyroValue[RATE_VALUE]).c_str());
+        int Rate=atoi(GetSensorValue(sGyroValue[RATE_VALUE]).c_str());
+        Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+FUNCT_STR);
+        return Rate;
     } else {
-        cout << "Unable to get Gyro becasue not in RATE mode " << endl;
+        Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+ERROR_STR);
+        m_Logger->~DataLogger();
         exit(1);
     }
 }
 
-Gyro::Gyro(Port_t Port, GyroMode_t Mode, DataLogger* Logger) :
-    Sensor(Port,Logger)
-{
-  SetMode(Mode);
-}
+
