@@ -12,6 +12,7 @@
 
 #define MOTOR_PATH    		"/sys/class/tacho-motor/"
 #define SENSOR_PATH   		"/sys/class/msensor/"
+#define LED_PATH                "/sys/class/leds/"
 #define MAX_FILENAME_LENGTH 	256
 
 /*
@@ -26,7 +27,7 @@ Ev3Device::Ev3Device (Port_t Port, DataLogger* Logger)
   m_DeviceID=" EV3DEVICE:"+sPortName[Port];
   m_Logger=Logger;
   m_DevicePath=GetDevicePath(Port);
-  Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+"-> Constructed EV3 device");
+  Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
 /*
@@ -34,7 +35,7 @@ Ev3Device::Ev3Device (Port_t Port, DataLogger* Logger)
  */
 Ev3Device::~Ev3Device ()
 {
-  Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+"-> EV3 device destroyed");
+  Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
 /*
@@ -52,9 +53,9 @@ string Ev3Device::GetDevicePath(Port_t Port)
   string deviceType;
   string deviceTypePath;
 
-  // Determine sensor or motor path. Everything connected to an IN port is
+  // Determine sensor, motor or led path. Everything connected to an IN port is
   // assumed to be a sensor. Conversely, OUT connected devices are assumed
-  // to be motors
+  // to be motors.
   switch (Port) {
     case IN_1:case IN_2:case IN_3:case IN_4:
       deviceType="sensor";
@@ -64,6 +65,13 @@ string Ev3Device::GetDevicePath(Port_t Port)
       deviceType="tacho-motor";
       deviceTypePath=MOTOR_PATH;
       break;
+    case LED_GREEN_LEFT:case LED_GREEN_RIGHT:
+    case LED_RED_LEFT:case LED_RED_RIGHT:
+      deviceType=sPortName[Port];
+      deviceTypePath=LED_PATH;
+      strcpy(PortPath,(deviceTypePath+deviceType).c_str());
+      return PortPath;
+      break;
     default:
       break;
   }
@@ -71,8 +79,7 @@ string Ev3Device::GetDevicePath(Port_t Port)
   // requested Port connection
   Directory=opendir(deviceTypePath.c_str());
   if(!Directory){
-      Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+
-      	" ***ERROR*** No device available on: "+deviceTypePath);
+      Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+ERROR_STR+deviceTypePath);
         m_Logger->~DataLogger();
         exit(-1);
   }
@@ -85,16 +92,14 @@ string Ev3Device::GetDevicePath(Port_t Port)
       ifstream inf(PortName);
       getline(inf,sResponse);
       if(sResponse==sPortName[Port]){
-	Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+"-> Got file path:"
-		      +PortPath);
+	Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+FUNCT_STR+PortPath);
 	return PortPath;
       }
     }
   }
   // If there is not match, log error condition, terminate logger
   // and exit program
-  Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+
-	" ***ERROR*** Attempting to attach device to port: "+sPortName[Port]);
+  Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+ERROR_STR+sPortName[Port]);
   m_Logger->~DataLogger();
   exit(-1);
 }
@@ -107,14 +112,12 @@ void Ev3Device::SetDeviceParameter(string Parameter, string Value)
   ofstream outf((m_DevicePath + "/" + Parameter).c_str(),ios::out);
   if (!outf) {
     // Log error condition, terminate logger and exit program
-    Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+
-	  " ***ERROR*** opening write stream for device ");
+    Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+ERROR_STR);
     m_Logger->~DataLogger();
     exit(-1);
   }
   outf << Value;
-  Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+"-> SetDeviceParameter:"+
-	Parameter+" to value:"+Value);
+  Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+FUNCT_STR+Parameter+","+Value);
   outf.close();
 }
 
@@ -126,16 +129,15 @@ string Ev3Device::GetDeviceParameter (string Parameter)
   ifstream inf((m_DevicePath + "/" + Parameter).c_str());
   if (!inf) {
     // Log error condition, terminate logger and exit program
-    Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+
-    " ***ERROR*** opening read stream for device ");
+    Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+ERROR_STR);
     m_Logger->~DataLogger();
     exit(-1);
   }
   string sResponse;
   getline(inf,sResponse);
   inf.close();
-  Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+"-> GetDeviceParameter:"+
-            Parameter+" got value:"+sResponse);
+  Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+FUNCT_STR+Parameter+","
+        +sResponse);
   return sResponse;
 }
 

@@ -13,17 +13,13 @@
 enum LedPosition_t {LEFT, RIGHT};
 enum LedColor_t {RED, GREEN};
 
-//TODO consider if it should derive for Ev3Device class.
-class Led
+
+class Led : public Ev3Device
 {
 public:
-  Led (LedPosition_t LedPosition, LedColor_t LedColor);
+  Led (Port_t Port, DataLogger* Logger=NULL);
   virtual
   ~Led ();
-  void SetLedColor(LedPosition_t LedPosition, LedColor_t LedColor);
-  LedPosition_t m_LedPosition;
-  LedColor_t m_LedColor;
-  string m_LedPath;
 };
 
 #endif /* LED_H_ */

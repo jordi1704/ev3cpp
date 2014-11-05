@@ -7,20 +7,17 @@
 
 #include "Led.h"
 
-Led::Led (LedPosition_t LedPosition, LedColor_t LedColor)
+Led::Led (Port_t Port, DataLogger* Logger) : Ev3Device(Port,Logger)
 {
-  // TODO Auto-generated constructor stub
-  m_LedPosition=LedPosition;
-  m_LedColor=LedColor;
+  m_DeviceID=" LED:"+sPortName[Port];
+  Trace(m_Logger,LED_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
 Led::~Led ()
 {
-  // TODO Auto-generated destructor stub
+  Trace(m_Logger,LED_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
-void Led::SetLedColor(LedPosition_t LedPosition, LedColor_t LedColor)
-{
 
-}
+
 

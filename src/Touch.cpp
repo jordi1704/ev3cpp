@@ -10,7 +10,7 @@
 Touch::Touch(Port_t Port, DataLogger* Logger) : Sensor(Port,Logger)
 {
   m_DeviceID=" TOUCH:"+sPortName[Port];
-  Trace(m_Logger,TOUCH_DBG_LVL,m_DeviceID+"-> Constructed Touch");
+  Trace(m_Logger,TOUCH_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
 Touch::~Touch ()
@@ -20,9 +20,9 @@ Touch::~Touch ()
 bool Touch::IsPressed(){
   bool isPressed=GetSensorValue(TOUCH_STATE)==TOUCH_PRESSED;
   if (isPressed) {
-      Trace(m_Logger,TOUCH_DBG_LVL,m_DeviceID+"-> Pressed");
+      Trace(m_Logger,TOUCH_DBG_LVL,m_DeviceID+FUNCT_STR+"true");
   } else {
-      Trace(m_Logger,TOUCH_DBG_LVL,m_DeviceID+"-> Released");
+      Trace(m_Logger,TOUCH_DBG_LVL,m_DeviceID+FUNCT_STR+"false");
   }
   return (isPressed);
 }
