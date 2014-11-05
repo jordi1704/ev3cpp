@@ -23,6 +23,11 @@ Gyro::Gyro(Port_t Port, GyroMode_t Mode, DataLogger* Logger) :
   Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
+Gyro::~Gyro()
+{
+  Trace(m_Logger,GYRO_DBG_LVL,m_DeviceID+FUNCT_STR);
+}
+
 /*
  * Gyro is reset by changing its mode. However in GYRO-GA mode it is not
  * possible to reset it this way.

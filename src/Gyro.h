@@ -30,7 +30,7 @@ public:
   GyroMode_t GetMode();
   Gyro (Port_t Port, GyroMode_t Mode, DataLogger* Logger=NULL);
   virtual
-  ~Gyro () {};
+  ~Gyro ();
 };
 
 #endif /* GYRO_H_ */
