@@ -14,10 +14,14 @@
 #define FUNCT_STR string("-> ")+__FUNCTION__+string(":")
 
 enum Port_t {  IN_1,  IN_2,  IN_3,  IN_4,
-              OUT_A, OUT_B, OUT_C, OUT_D, _PORTS_NUM_ };
+              OUT_A, OUT_B, OUT_C, OUT_D,
+              LED_RED_LEFT, LED_GREEN_LEFT, LED_RED_RIGHT, LED_GREEN_RIGHT,
+              PORTS_NUM };
 
-const string sPortName[_PORTS_NUM_]={  "in1", "in2", "in3", "in4",
-				      "outA","outB","outC","outD" };
+const string sPortName[PORTS_NUM]={  "in1", "in2", "in3", "in4",
+				      "outA","outB","outC","outD",
+                                      "ev3:red:left","ev3:green:left",
+				      "ev3:red:right","ev3:green:right"};
 
 const DbgLevel_t EV3DEVICE_DBG_LVL    = DBG_LVL_0;
 const DbgLevel_t MOTOR_DBG_LVL        = DBG_LVL_1;

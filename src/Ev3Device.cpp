@@ -12,6 +12,7 @@
 
 #define MOTOR_PATH    		"/sys/class/tacho-motor/"
 #define SENSOR_PATH   		"/sys/class/msensor/"
+#define LED_PATH                "/sys/class/leds/"
 #define MAX_FILENAME_LENGTH 	256
 
 /*
@@ -52,9 +53,9 @@ string Ev3Device::GetDevicePath(Port_t Port)
   string deviceType;
   string deviceTypePath;
 
-  // Determine sensor or motor path. Everything connected to an IN port is
+  // Determine sensor, motor or led path. Everything connected to an IN port is
   // assumed to be a sensor. Conversely, OUT connected devices are assumed
-  // to be motors
+  // to be motors.
   switch (Port) {
     case IN_1:case IN_2:case IN_3:case IN_4:
       deviceType="sensor";
@@ -63,6 +64,13 @@ string Ev3Device::GetDevicePath(Port_t Port)
     case OUT_A:case OUT_B:case OUT_C:case OUT_D:
       deviceType="tacho-motor";
       deviceTypePath=MOTOR_PATH;
+      break;
+    case LED_GREEN_LEFT:case LED_GREEN_RIGHT:
+    case LED_RED_LEFT:case LED_RED_RIGHT:
+      deviceType=sPortName[Port];
+      deviceTypePath=LED_PATH;
+      strcpy(PortPath,(deviceTypePath+deviceType).c_str());
+      return PortPath;
       break;
     default:
       break;
