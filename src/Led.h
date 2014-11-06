@@ -11,15 +11,30 @@
 #include <Ev3Device.h>
 
 enum LedPosition_t {LEFT, RIGHT};
-enum LedColor_t {RED, GREEN};
+enum LedColor_t {RED, GREEN, ORANGE, OFF, COLORS};
+const string sLedColor[COLORS]={"red","green","orange","off"};
 
 
-class Led : public Ev3Device
+class LedMono : public Ev3Device
 {
 public:
-  Led (Port_t Port, DataLogger* Logger=NULL);
+  LedMono (Port_t Port, DataLogger* Logger=NULL);
+  virtual
+  ~LedMono ();
+};
+
+class Led
+{
+public:
+  Led (LedPosition_t Position, DataLogger* Logger=NULL);
   virtual
   ~Led ();
+  void SetColor(LedColor_t Color);
+private:
+LedMono* RedLed;
+LedMono* GreenLed;
+string m_DeviceID;
+DataLogger* m_Logger;
 };
 
 #endif /* LED_H_ */
