@@ -18,9 +18,12 @@ public:
   ~MotorPair ();
   void Turn(float Angle, Power_t Power);
   void Pivot(Power_t Power);
+  void Straight(Power_t Power);
 private:
   Tacho* MotorL;
   Tacho* MotorR;
+  string m_DeviceID;
+  DataLogger* m_Logger;
 };
 
 #endif /* MOTORPAIR_H_ */
