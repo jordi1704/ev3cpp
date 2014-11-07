@@ -10,12 +10,12 @@
 
 #include "Sensor.h"
 
-enum GyroMode_t {ANGLE, RATE, ANGLE_AND_RATE, _GYRO_MODES_};
-const string sGyroMode[_GYRO_MODES_+1]={"GYRO-ANG","GYRO-RATE",
+enum GyroMode_t {ANGLE, RATE, ANGLE_AND_RATE, GYRO_MODES};
+const string sGyroMode[GYRO_MODES+1]={"GYRO-ANG","GYRO-RATE",
                                         "GYRO-G&A","mode"};
 
-enum GyroValue_t {ANGLE_VALUE, RATE_VALUE, GA_ANGLE, GA_RATE, _GYRO_VALUES_};
-const string sGyroValue[_GYRO_VALUES_]={"value0","value0","value0","value1"};
+enum GyroValue_t {ANGLE_VALUE, RATE_VALUE, GA_ANGLE, GA_RATE, GYRO_VALUES};
+const string sGyroValue[GYRO_VALUES]={"value0","value0","value0","value1"};
 
 class Gyro : public Sensor
 {
@@ -30,7 +30,7 @@ public:
   GyroMode_t GetMode();
   Gyro (Port_t Port, GyroMode_t Mode, DataLogger* Logger=NULL);
   virtual
-  ~Gyro () {};
+  ~Gyro ();
 };
 
 #endif /* GYRO_H_ */

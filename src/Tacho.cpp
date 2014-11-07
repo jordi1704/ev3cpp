@@ -11,11 +11,12 @@
 Tacho::Tacho (Port_t Port,DataLogger* Logger) : Motor(Port,Logger)
 {
   m_DeviceID=" TACHO:"+sPortName[Port];
-  Trace(m_Logger,TACHO_DBG_LVL,m_DeviceID+"-> Constructed Tacho");
+  Trace(m_Logger,TACHO_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
 Tacho::~Tacho ()
 {
+  Trace(m_Logger,TACHO_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
 // Override Motor::CalculateSpeed with correct conversion factor

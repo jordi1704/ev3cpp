@@ -10,11 +10,18 @@
 
 #include "DataLogger.h"
 
-enum Port_t {  IN_1,  IN_2,  IN_3,  IN_4,
-              OUT_A, OUT_B, OUT_C, OUT_D, _PORTS_NUM_ };
+#define ERROR_STR string("-> ***ERROR*** ")+__FUNCTION__+string(":")
+#define FUNCT_STR string("-> ")+__FUNCTION__+string(":")
 
-const string sPortName[_PORTS_NUM_]={  "in1", "in2", "in3", "in4",
-				      "outA","outB","outC","outD" };
+enum Port_t {  IN_1,  IN_2,  IN_3,  IN_4,
+              OUT_A, OUT_B, OUT_C, OUT_D,
+              LED_RED_LEFT, LED_GREEN_LEFT, LED_RED_RIGHT, LED_GREEN_RIGHT,
+              PORTS_NUM };
+
+const string sPortName[PORTS_NUM]={  "in1", "in2", "in3", "in4",
+				      "outA","outB","outC","outD",
+                                      "ev3:red:left","ev3:green:left",
+				      "ev3:red:right","ev3:green:right"};
 
 const DbgLevel_t EV3DEVICE_DBG_LVL    = DBG_LVL_0;
 const DbgLevel_t MOTOR_DBG_LVL        = DBG_LVL_1;
@@ -26,6 +33,7 @@ const DbgLevel_t GYRO_DBG_LVL         = DBG_LVL_2;
 const DbgLevel_t COLOR_DBG_LVL        = DBG_LVL_2;
 const DbgLevel_t COLORIMETER_DBG_LVL  = DBG_LVL_3;
 const DbgLevel_t LIGHTSENSOR_DBG_LVL  = DBG_LVL_3;
+const DbgLevel_t LED_DBG_LVL          = DBG_LVL_3;
 
 
 class Ev3Device
