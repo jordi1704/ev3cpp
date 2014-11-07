@@ -14,7 +14,4 @@
 #define EV3_LOG_FILE "ev3.log"
 
 
-
-
-
 #endif /* GLOBALDEFS_H_ */
