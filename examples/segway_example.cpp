@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "cutils.h"
 #include <stdio.h>
+#include <unistd.h>
 
 
 #include "Tacho.h"
@@ -51,7 +52,6 @@ void setPID()
 	break;
       case 'q':
 	Kd=Kd-0.1;
-
 	break;
       default:
 	break;
@@ -82,17 +82,17 @@ void TraceGen()
     std::stringstream msg;
     msg << Error <<","<<Rate<<","<<Power<<","<<Kp<<","<<Kd<<endl;
     string Message=msg.str();
-    Trace(Logger,DBG_LVL_0,"->PID params: "+Message);
+    Trace(Logger,DBG_LVL_3,"->PID params: "+Message);
     usleep(ONE_MILLISECOND*200);
   }
 }
 
 int main()
 {
-  Logger=new DataLogger(EV3_LOG_FILE,DBG_LVL_0);
+  Logger=new DataLogger(EV3_LOG_FILE,DBG_LVL_3);
+
   Gyro*  myGyro=new Gyro(IN_3,ANGLE_AND_RATE,Logger);
   myMotor=new Tacho(OUT_A,Logger);
-
 
   myGyro->GetRateAndAngle(Rate,Angle);
   int initAngle=Angle;
