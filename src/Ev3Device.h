@@ -34,6 +34,7 @@ const DbgLevel_t COLOR_DBG_LVL        = DBG_LVL_2;
 const DbgLevel_t COLORIMETER_DBG_LVL  = DBG_LVL_3;
 const DbgLevel_t LIGHTSENSOR_DBG_LVL  = DBG_LVL_3;
 const DbgLevel_t LED_DBG_LVL          = DBG_LVL_3;
+const DbgLevel_t MOTORPAIR_DBG_LVL    = DBG_LVL_3;
 
 
 class Ev3Device
