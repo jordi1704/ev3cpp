@@ -14,10 +14,13 @@ MotorPair::MotorPair (Port_t LeftPort, Port_t RightPort, DataLogger* Logger)
 {
   MotorL=new Tacho(LeftPort,Logger);
   MotorR=new Tacho(RightPort,Logger);
+
   MotorL->SetRegulationMode(REG_ON);
   MotorR->SetRegulationMode(REG_ON);
+
   m_DeviceID=" MOTORPAIR:"+sPortName[LeftPort]+":"+sPortName[RightPort];
   m_Logger=Logger;
+
   Trace(m_Logger, MOTORPAIR_DBG_LVL, m_DeviceID+FUNCT_STR);
 }
 
@@ -55,4 +58,17 @@ void MotorPair::Turn(float Angle, Power_t Power)
   Trace(m_Logger, MOTORPAIR_DBG_LVL, m_DeviceID+FUNCT_STR+ToString(Power));
 }
 
+void MotorPair::Stop()
+{
+  MotorL->Stop();
+  MotorR->Stop();
+  Trace(m_Logger, MOTORPAIR_DBG_LVL, m_DeviceID+FUNCT_STR);
+}
+
+void MotorPair::SetRegulationMode(reg_mode_t RegMode)
+{
+  MotorL->SetRegulationMode(RegMode);
+  MotorR->SetRegulationMode(RegMode);
+  Trace(m_Logger, MOTORPAIR_DBG_LVL, m_DeviceID+FUNCT_STR+sRegMode[RegMode]);
+}
 

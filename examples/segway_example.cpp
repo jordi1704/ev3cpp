@@ -12,10 +12,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
-
-#include "Tacho.h"
 #include "Touch.h"
 #include "Gyro.h"
+#include "MotorPair.h"
 #include "globalDefs.h"
 #include "DataLogger.h"
 
@@ -23,18 +22,28 @@
 
 using namespace std;
 
-float Kp=3.0;
-float Kd=1.5;
+float Kp=100.0f;
+float Kd=100.0f;
+float Offset=5.0f;
 
+// 20 5 3 molt be
+// 30 10 5
+// 100 10 5
+
+bool End = false;
+
+bool t1s,t2s,t3s;
 
 int Rate, Angle;
 int Power;
 int Error;
-Tacho* myMotor;
+MotorPair* myMotor;
 DataLogger* Logger;
 
 void setPID()
 {
+  cout << "SetPID thread started"<< endl;
+  t1s=true;
   float p,d;
   char KeyStroke;
   system ("/bin/stty raw");
@@ -58,12 +67,19 @@ void setPID()
     }
     cout << "Kp: " << Kp << endl;
     cout << "Kd: " << Kd << endl;
+    if (End){
+	t1s=false;
+	break;
+    }
   }
+  cout << "SetPID thread ended" << endl;
 }
 
 void EmergencyExit()
 {
-  Touch* myButton=new Touch(IN_4,NULL);
+  cout << "Emergency Exit thread started"<< endl;
+  t2s=true;
+  Touch* myButton=new Touch(IN_3,NULL);
   while(1){
   if(myButton->IsPressed())
     {
@@ -71,45 +87,72 @@ void EmergencyExit()
       myMotor->Stop();
       system ("/bin/stty cooked");
       Logger->~DataLogger();
-      exit(0);
+      End=true;
     }
+    if(End){
+	t2s=false;
+	break;
+    }
+    //cout << "monitoring button" << endl;
+    usleep(500*ONE_MILLISECOND);
   }
+  cout << "Emergency Exit thread ended"<<endl;
+
 }
 
 void TraceGen()
 {
+  cout << "TraceGen thread started"<< endl;
+  t3s=true;
   while(1){
     std::stringstream msg;
-    msg << Error <<","<<Rate<<","<<Power<<","<<Kp<<","<<Kd<<endl;
+    msg << "PID Params,      "<<Error <<","<<Rate<<","<<Power<<","<<Kp<<","<<Kd;
     string Message=msg.str();
-    Trace(Logger,DBG_LVL_3,"->PID params: "+Message);
+    //Trace(Logger,DBG_LVL_3,Message);
     usleep(ONE_MILLISECOND*200);
+    if(End){
+	Logger->~DataLogger();
+	t3s=false;
+	break;
+    }
   }
+  cout << "TraceGen thread ended"<< endl;
 }
+//TODO perque es loga la creacio del motor pair si te null al logger?
+// TODO perque no actua el pulsador? Si que actua pero els motors queden al seu rotllo
+//TODO els motors van descompensats
 
 int main()
 {
+  cout << "One"<<endl;
   Logger=new DataLogger(EV3_LOG_FILE,DBG_LVL_3);
 
-  Gyro*  myGyro=new Gyro(IN_3,ANGLE_AND_RATE,Logger);
-  myMotor=new Tacho(OUT_A,Logger);
-
+  //Touch* myButton=new Touch(IN_3);
+  Gyro*  myGyro=new Gyro(IN_2,ANGLE_AND_RATE,Logger);
+  cout << "Two" << endl;
+  myMotor=new MotorPair(OUT_A,OUT_B,NULL);
+  myMotor->SetRegulationMode(REG_OFF);
+  cout << "Three" << endl;
   myGyro->GetRateAndAngle(Rate,Angle);
   int initAngle=Angle;
-  myMotor->RunForever(0);
+  myMotor->Straight(0);
 
-  thread t1(setPID);
-  thread t2(TraceGen);
+  //thread t1(setPID);
+  //thread t2(TraceGen);
   thread t3(EmergencyExit);
 
   while(1){
       myGyro->GetRateAndAngle(Rate,Angle);
-      Error = Angle-initAngle;
+      Error = Angle-initAngle+Offset;
       Power=Kp*Error+Kd*Rate;
-      myMotor->SetSpeed(Power);
-
-
+      if (Power>100) Power=100;
+      if (Power<-100) Power= -100;
+      myMotor->Straight(Power);
+      //usleep(100*ONE_MILLISECOND);
+      if ((!t2s)&&(!t3s)) break;
   }
+  myMotor->Stop();
+  //t1.~thread();
   exit(0);
 }
 

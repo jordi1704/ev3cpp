@@ -19,6 +19,8 @@ public:
   void Turn(float Angle, Power_t Power);
   void Pivot(Power_t Power);
   void Straight(Power_t Power);
+  void SetRegulationMode(reg_mode_t RegMode);
+  void Stop();
 private:
   Tacho* MotorL;
   Tacho* MotorR;
