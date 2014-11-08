@@ -8,4 +8,4 @@
 
 ### How do I get set up? ###
 
-* Summary of set up in this [wiki](https://bitbucket.org/jordi1704/ev3cpp/wiki/Home)
+* Summary of set up in this [wiki](https://github.com/jordi1704/ev3cpp/wiki)
