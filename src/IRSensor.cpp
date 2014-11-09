@@ -33,6 +33,7 @@ ProximitySensor::ProximitySensor(Port_t Port, DataLogger* Logger) :
     IRSensor(Port,PROXIMITY,Logger)
 {
   m_DeviceID=" PROXIMITY_SENSOR:"+sPortName[Port];
+  m_MaxDistance=70.0f;
   Trace(m_Logger,PROXIMITY_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
@@ -60,4 +61,27 @@ float ProximitySensor::GetDistance()
   fDistance=m_MaxDistance*atoi(sDistance.c_str())/100.f;
   Trace(m_Logger,PROXIMITY_DBG_LVL,m_DeviceID+FUNCT_STR+ToString(fDistance));
   return fDistance;
+}
+
+Seeker::Seeker(Port_t Port, IRChannel_t Channel, DataLogger* Logger) :
+    IRSensor(Port, SEEKER, Logger)
+{
+  m_DeviceID=" SEEKER:"+sPortName[Port];
+  m_Channel=Channel;
+  Trace(m_Logger,SEEKER_DBG_LVL,m_DeviceID+FUNCT_STR);
+}
+
+Seeker::~Seeker()
+{
+  Trace(m_Logger,SEEKER_DBG_LVL,m_DeviceID+FUNCT_STR);
+}
+
+int Seeker::GetAngleDistance(signed char &Angle, signed char &Distance)
+{
+  string sAngle="value"+ToString(m_Channel);
+  string sDistance="value"+ToString(m_Channel+1);
+  Angle=atoi(GetSensorValue(sAngle).c_str());
+  Distance=atoi(GetSensorValue(sDistance).c_str());
+  // Return 0 when no beacon is present
+  return ((Angle==0) && (Distance=0-128)) ? 0 : 1;
 }

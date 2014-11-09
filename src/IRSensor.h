@@ -13,6 +13,8 @@
 enum IRSensorMode_t {PROXIMITY, SEEKER, REMOTE, IR_MODES};
 const string sIRSensorMode[IR_MODES]={"IR-PROX", "IR-SEEK", "IR-REMOTE"};
 
+enum IRChannel_t {CH1, CH2, CH3, CH4};
+
 class IRSensor : public Sensor
 {
 public:
@@ -32,7 +34,18 @@ public:
   float GetDistance();
   void SetMaxDistance(float MaxDistance);
 private:
-  float m_MaxDistance=70.0f;
+  float m_MaxDistance;
+};
+
+class Seeker : private IRSensor
+{
+public:
+  Seeker (Port_t Port, IRChannel_t Channel, DataLogger* Logger=NULL);
+  virtual
+  ~Seeker();
+  int GetAngleDistance (signed char &Angle, signed char &Distance);
+private:
+  IRChannel_t m_Channel;
 };
 
 
