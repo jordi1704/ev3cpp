@@ -13,6 +13,7 @@ IRSensor::IRSensor (Port_t Port, IRSensorMode_t Mode, DataLogger* Logger) :
 {
   m_DeviceID=" IR_SENSOR:"+sPortName[Port];
   m_IRSensorMode=Mode;
+  m_RxChannel=CH1;
   IRSensor::SetIRSensorMode(Mode);
   Trace(m_Logger,IRSENSOR_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
@@ -28,6 +29,7 @@ void IRSensor::SetIRSensorMode(IRSensorMode_t Mode)
   m_IRSensorMode=Mode;
   Trace(m_Logger,IRSENSOR_DBG_LVL,m_DeviceID+FUNCT_STR+sIRSensorMode[Mode]);
 }
+
 
 ProximitySensor::ProximitySensor(Port_t Port, DataLogger* Logger) :
     IRSensor(Port,PROXIMITY,Logger)
@@ -67,7 +69,7 @@ Seeker::Seeker(Port_t Port, IRChannel_t Channel, DataLogger* Logger) :
     IRSensor(Port, SEEKER, Logger)
 {
   m_DeviceID=" SEEKER:"+sPortName[Port];
-  m_Channel=Channel;
+  m_RxChannel=Channel;
   Trace(m_Logger,SEEKER_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
@@ -78,10 +80,32 @@ Seeker::~Seeker()
 
 int Seeker::GetAngleDistance(signed char &Angle, signed char &Distance)
 {
-  string sAngle="value"+ToString(m_Channel);
-  string sDistance="value"+ToString(m_Channel+1);
+  string sAngle="value"+ToString(m_RxChannel);
+  string sDistance="value"+ToString(m_RxChannel+1);
   Angle=atoi(GetSensorValue(sAngle).c_str());
   Distance=atoi(GetSensorValue(sDistance).c_str());
+  Trace(m_Logger,SEEKER_DBG_LVL,m_DeviceID+FUNCT_STR+sAngle+","+sDistance);
   // Return 0 when no beacon is present
   return ((Angle==0) && (Distance=0-128)) ? 0 : 1;
 }
+
+Remote::Remote(Port_t Port, IRChannel_t Channel, DataLogger* Logger) :
+    IRSensor(Port, REMOTE, Logger)
+{
+  m_DeviceID=" REMOTE:"+sPortName[Port];
+  m_RxChannel=Channel;
+  Trace(m_Logger,REMOTE_DBG_LVL,m_DeviceID+FUNCT_STR);
+}
+
+Remote::~Remote()
+{
+  Trace(m_Logger,REMOTE_DBG_LVL,m_DeviceID+FUNCT_STR);
+}
+
+Button_t Remote::GetButton()
+{
+  string button = GetSensorValue("value"+ToString(m_RxChannel));
+  Trace(m_Logger,REMOTE_DBG_LVL,m_DeviceID+FUNCT_STR+button);
+  return static_cast<Button_t>(atoi(button.c_str()));
+}
+

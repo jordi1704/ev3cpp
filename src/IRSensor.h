@@ -15,6 +15,10 @@ const string sIRSensorMode[IR_MODES]={"IR-PROX", "IR-SEEK", "IR-REMOTE"};
 
 enum IRChannel_t {CH1, CH2, CH3, CH4};
 
+enum Button_t {NONE, RED_UP, RED_DN, BLUE_UP, BLUE_DN, RED_UP_BLUE_UP,
+  RED_UP_BLUE_DN, RED_DN_BLUE_UP, RED_DN_BLUE_DN, BEACON_ON, RED_UP_RED_DN,
+  BLUE_UP_BLUE_DN};
+
 class IRSensor : public Sensor
 {
 public:
@@ -22,13 +26,15 @@ public:
   virtual
   ~IRSensor ();
   void SetIRSensorMode(IRSensorMode_t Mode);
+protected:
   IRSensorMode_t m_IRSensorMode;
+  IRChannel_t m_RxChannel;
 };
 
 class ProximitySensor : private IRSensor
 {
 public:
-  ProximitySensor (Port_t Port, DataLogger* Logger);
+  ProximitySensor (Port_t Port, DataLogger* Logger=NULL);
   virtual
   ~ProximitySensor();
   float GetDistance();
@@ -44,8 +50,15 @@ public:
   virtual
   ~Seeker();
   int GetAngleDistance (signed char &Angle, signed char &Distance);
-private:
-  IRChannel_t m_Channel;
+};
+
+class Remote : private IRSensor
+{
+public:
+  Remote (Port_t Port, IRChannel_t Channel, DataLogger* Logger=NULL);
+  virtual
+  ~Remote();
+  Button_t GetButton();
 };
 
 
