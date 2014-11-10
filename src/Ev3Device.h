@@ -35,6 +35,10 @@ const DbgLevel_t COLORIMETER_DBG_LVL  = DBG_LVL_3;
 const DbgLevel_t LIGHTSENSOR_DBG_LVL  = DBG_LVL_3;
 const DbgLevel_t LED_DBG_LVL          = DBG_LVL_3;
 const DbgLevel_t MOTORPAIR_DBG_LVL    = DBG_LVL_3;
+const DbgLevel_t IRSENSOR_DBG_LVL     = DBG_LVL_3;
+const DbgLevel_t PROXIMITY_DBG_LVL    = DBG_LVL_3;
+const DbgLevel_t SEEKER_DBG_LVL       = DBG_LVL_3;
+const DbgLevel_t REMOTE_DBG_LVL       = DBG_LVL_3;
 
 
 class Ev3Device
