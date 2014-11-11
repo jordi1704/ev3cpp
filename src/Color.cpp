@@ -13,8 +13,7 @@ Color::Color (Port_t Port, ColorMode_t Mode, DataLogger* Logger) :
 							Sensor(Port,Logger)
 {
   m_DeviceID=" COLOR:"+sPortName[Port];
-  m_ColorMode=Mode;
-  SetColorMode(Mode);
+  Color::SetColorMode(Mode);
   Trace(m_Logger,COLOR_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
@@ -26,7 +25,6 @@ Color::~Color ()
 void Color::SetColorMode(ColorMode_t Mode)
 {
   Sensor::SetSensorMode(sColorMode[Mode]);
-  m_ColorMode=Mode;
   Trace(m_Logger,COLOR_DBG_LVL,m_DeviceID+FUNCT_STR+sColorMode[Mode]);
 }
 
@@ -45,7 +43,6 @@ LightSensor::~LightSensor()
 int LightSensor::GetReflected()
 {
   int ReflectedValue;
-  if(m_ColorMode!=REFLECTED) SetColorMode(REFLECTED);
   ReflectedValue=atoi(GetSensorValue(sColorValue[REFLECTED]).c_str());
   Trace(m_Logger,LIGHTSENSOR_DBG_LVL,m_DeviceID+FUNCT_STR+
         ToString(ReflectedValue));
@@ -55,7 +52,6 @@ int LightSensor::GetReflected()
 int LightSensor::GetAmbient()
 {
   int AmbientValue;
-  if(m_ColorMode!=AMBIENT) SetColorMode(AMBIENT);
   AmbientValue=atoi(GetSensorValue(sColorValue[REFLECTED]).c_str());
   Trace(m_Logger,LIGHTSENSOR_DBG_LVL,m_DeviceID+FUNCT_STR+
         ToString(AmbientValue));
@@ -78,7 +74,6 @@ Color_t Colorimeter::GetColor()
 {
   unsigned char colorNumber;
   Color_t ColorDetected;
-  if(m_ColorMode!=COLOR) SetColorMode(COLOR);
   colorNumber=atoi(Sensor::GetSensorValue(sColorValue[COLOR]).c_str());
   Trace(m_Logger,COLORIMETER_DBG_LVL,m_DeviceID+FUNCT_STR+sColor[colorNumber]);
   ColorDetected  = (colorNumber==NONE) ? NONE :

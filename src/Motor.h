@@ -47,6 +47,8 @@ public:
   void ResetPosition();
   void Stop();
 protected:
+  // To allow only certain kind of motors to change regulation mode
+  // For example, Tacho motors will be allowed, whereas MiniTacho won't
   void SetRegulationMode(reg_mode_t RegMode);
 private:
   virtual int CalculateSpeed(Power_t Power);

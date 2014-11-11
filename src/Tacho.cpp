@@ -25,9 +25,9 @@ int Tacho::CalculateSpeed(Power_t Power)
   return (Power*MAX_SPEED_BIG_MOTOR)/100;
 }
 
-// Shadow private Motor::SetRegulationMode since Tacho motor
-// can be unregulated
+// Allow to set regulation mode for Tacho motor, unlike minitacho which is,
+// always, regulated
 void Tacho::SetRegulationMode(reg_mode_t RegMode)
 {
-  SetRegulationMode(RegMode);
+  Motor::SetRegulationMode(RegMode);
 }

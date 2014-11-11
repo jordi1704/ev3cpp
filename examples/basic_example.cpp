@@ -12,12 +12,12 @@ int main()
   // Create a tacho motor connected on output port A and get traces
   Tacho* myMotor=new Tacho(OUT_A,myLogger);
 
-  // Create a light sensor on input port 3 and get traces
-  LightSensor* myLightSensor=new LightSensor(IN_3,myLogger);
-
   // Create a touch sensor on input port 4. As no logger pointer is specified,
   // there will be no logged info about touch sensor
   Touch* myTouch=new Touch(IN_4);
+
+  // Create a light sensor on input port 3
+  LightSensor* myLightSensor=new LightSensor(IN_3);
 
   // Start motor at power 50%
   myMotor->RunForever(50);
