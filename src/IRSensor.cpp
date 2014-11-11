@@ -12,7 +12,6 @@ IRSensor::IRSensor (Port_t Port, IRSensorMode_t Mode, DataLogger* Logger) :
   Sensor(Port, Logger)
 {
   m_DeviceID=" IR_SENSOR:"+sPortName[Port];
-  m_IRSensorMode=Mode;
   m_RxChannel=CH1;
   IRSensor::SetIRSensorMode(Mode);
   Trace(m_Logger,IRSENSOR_DBG_LVL,m_DeviceID+FUNCT_STR);
@@ -26,7 +25,6 @@ IRSensor::~IRSensor ()
 void IRSensor::SetIRSensorMode(IRSensorMode_t Mode)
 {
   Sensor::SetSensorMode(sIRSensorMode[Mode]);
-  m_IRSensorMode=Mode;
   Trace(m_Logger,IRSENSOR_DBG_LVL,m_DeviceID+FUNCT_STR+sIRSensorMode[Mode]);
 }
 
