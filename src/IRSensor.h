@@ -27,7 +27,6 @@ public:
   ~IRSensor ();
   void SetIRSensorMode(IRSensorMode_t Mode);
 protected:
-  IRSensorMode_t m_IRSensorMode;
   IRChannel_t m_RxChannel;
 };
 

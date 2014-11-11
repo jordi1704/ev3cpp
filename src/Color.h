@@ -27,7 +27,6 @@ public:
   virtual
   ~Color ();
   void SetColorMode(ColorMode_t Mode);
-  ColorMode_t m_ColorMode;
 };
 
 class LightSensor : private Color

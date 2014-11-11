@@ -52,7 +52,7 @@ public:
   string m_DeviceID;    // Name and Port of the device
   DataLogger* m_Logger;
 private:
-  string m_DevicePath;  // Path of the device in ev3dev filesystem
+  string m_DevicePath;  // Path of the device in ev3dev file system
   string GetDevicePath(Port_t Port);
 };
 
