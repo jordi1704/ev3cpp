@@ -11,6 +11,9 @@
 #include <fstream>
 #include <stdlib.h>
 
+//#define CONSOLE_DBG
+
+
 using namespace std;
 
 enum DbgLevel_t {DBG_LVL_0, DBG_LVL_1, DBG_LVL_2, DBG_LVL_3, NO_DBG} ;

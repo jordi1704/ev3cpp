@@ -17,14 +17,16 @@
 #include "MotorPair.h"
 #include "globalDefs.h"
 #include "DataLogger.h"
+#include <ctime>
+#include "Motor.h"
 
 #include <thread>
 
 using namespace std;
 
-float Kp=100.0f;
-float Kd=100.0f;
-float Offset=5.0f;
+float Kp=20.0f;
+float Kd=5.0f;
+float Offset=10.0f;
 
 // 20 5 3 molt be
 // 30 10 5
@@ -37,8 +39,14 @@ bool t1s,t2s,t3s;
 int Rate, Angle;
 int Power;
 int Error;
-MotorPair* myMotor;
 DataLogger* Logger;
+
+ServoMotor* MotorL;
+ServoMotor* MotorR;
+
+clock_t start, end, duration;
+
+
 
 void setPID()
 {
@@ -84,7 +92,8 @@ void EmergencyExit()
   if(myButton->IsPressed())
     {
       // stop motors, restore linux console mode and close logging
-      myMotor->Stop();
+      MotorL->Stop();
+      MotorR->Stop();
       system ("/bin/stty cooked");
       Logger->~DataLogger();
       End=true;
@@ -125,33 +134,44 @@ void TraceGen()
 int main()
 {
   cout << "One"<<endl;
-  Logger=new DataLogger(EV3_LOG_FILE,DBG_LVL_3);
-
+  //Logger=new DataLogger(EV3_LOG_FILE,DBG_LVL_0);
+  cout << "One bis" << endl;
   //Touch* myButton=new Touch(IN_3);
-  Gyro*  myGyro=new Gyro(IN_2,ANGLE_AND_RATE,Logger);
+
+  Gyro*  myGyro=new Gyro(IN_2,ANGLE_AND_RATE);
+
   cout << "Two" << endl;
-  myMotor=new MotorPair(OUT_A,OUT_B,NULL);
-  myMotor->SetRegulationMode(REG_OFF);
+  MotorL=new ServoMotor(OUT_A);
+  MotorR=new ServoMotor(OUT_B);
   cout << "Three" << endl;
   myGyro->GetRateAndAngle(Rate,Angle);
   int initAngle=Angle;
-  myMotor->Straight(0);
+  MotorL->RunForever(0);
+  MotorR->RunForever(0);
 
   //thread t1(setPID);
   //thread t2(TraceGen);
   thread t3(EmergencyExit);
 
   while(1){
+//      start=clock();
+//      WaitForMilliseconds(2000);
+//      cout << "Duration is: " << ToString((clock()-start)*1000000.0f/717197.0f) <<" microseconds"<< endl;
+//      break;
+      start=clock();
       myGyro->GetRateAndAngle(Rate,Angle);
       Error = Angle-initAngle+Offset;
       Power=Kp*Error+Kd*Rate;
       if (Power>100) Power=100;
       if (Power<-100) Power= -100;
-      myMotor->Straight(Power);
-      //usleep(100*ONE_MILLISECOND);
-      if ((!t2s)&&(!t3s)) break;
+      MotorL->SetSpeed(Power);
+      MotorR->SetSpeed(Power);
+      cout << "Duration is: " << ToString((clock()-start)*1000000.0f/717197.0f) <<" microseconds"<< endl;
+      //usleep(1000*ONE_MILLISECOND);
+      if ((!t2s)) break;
   }
-  myMotor->Stop();
+  MotorL->Stop();
+  MotorR->Stop();
   //t1.~thread();
   exit(0);
 }

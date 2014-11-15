@@ -2,6 +2,8 @@
 #include <iostream>
 #include <ctime>
 
+
+
 using namespace std;
 
 DataLogger::DataLogger(string Filename, DbgLevel_t DbgLevel=NO_DBG)
@@ -39,6 +41,9 @@ void DataLogger::LogMessage(DbgLevel_t DbgLevel, string Msg)
     // CSV format
     strftime(buffer,80,"%d-%m-%Y,%I:%M:%S,",timeinfo);
     m_obuf << string(buffer) << Msg << endl;
+#ifdef CONSOLE_DBG
+    cout << string(buffer) << Msg << endl;
+#endif
   }
 }
 

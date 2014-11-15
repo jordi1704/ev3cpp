@@ -26,7 +26,7 @@ Ev3Device::Ev3Device (Port_t Port, DataLogger* Logger)
 {
   m_DeviceID=" EV3DEVICE:"+sPortName[Port];
   m_Logger=Logger;
-  m_DevicePath=GetDevicePath(Port);
+  this->SetDevicePath(Port);
   Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
@@ -43,7 +43,7 @@ Ev3Device::~Ev3Device ()
  * port.
  *
  */
-string Ev3Device::GetDevicePath(Port_t Port)
+void Ev3Device::SetDevicePath(Port_t Port)
 {
   char PortPath[MAX_FILENAME_LENGTH];
   char PortName[MAX_FILENAME_LENGTH];
@@ -70,7 +70,8 @@ string Ev3Device::GetDevicePath(Port_t Port)
       deviceType=sPortName[Port];
       deviceTypePath=LED_PATH;
       strcpy(PortPath,(deviceTypePath+deviceType).c_str());
-      return PortPath;
+      m_DevicePath=PortPath;
+      return;
       break;
     default:
       break;
@@ -93,7 +94,8 @@ string Ev3Device::GetDevicePath(Port_t Port)
       getline(inf,sResponse);
       if(sResponse==sPortName[Port]){
 	Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+FUNCT_STR+PortPath);
-	return PortPath;
+	m_DevicePath=PortPath;
+	return;
       }
     }
   }
@@ -139,6 +141,11 @@ string Ev3Device::GetDeviceParameter (string Parameter)
   Trace(m_Logger,EV3DEVICE_DBG_LVL,m_DeviceID+FUNCT_STR+Parameter+","
         +sResponse);
   return sResponse;
+}
+
+string Ev3Device::GetDevicePath()
+{
+  return m_DevicePath;
 }
 
 

@@ -10,6 +10,7 @@
 
 
 #include "Ev3Device.h"
+#include "DirectIO.h"
 
 using namespace std;
 
@@ -46,14 +47,28 @@ public:
   Position_t GetPosition();
   void ResetPosition();
   void Stop();
+  virtual int CalculateSpeed(Power_t Power);
 protected:
   // To allow only certain kind of motors to change regulation mode
   // For example, Tacho motors will be allowed, whereas MiniTacho won't
   void SetRegulationMode(reg_mode_t RegMode);
 private:
-  virtual int CalculateSpeed(Power_t Power);
   reg_mode_t GetRegulationMode();
   reg_mode_t m_RegMode;
 };
+
+class ServoMotor : public Motor
+{
+public:
+  ServoMotor(Port_t Port, DataLogger* Logger=NULL);
+  void SetSpeed(Power_t Power);
+  virtual ~ServoMotor();
+private:
+  dirIO::DirectIO* m_OutStream;
+};
+
+
+
+
 
 #endif /* MOTOR_H_ */

@@ -45,11 +45,12 @@ public:
   ~Ev3Device ();
   void SetDeviceParameter(string Parameter, string Value);
   string GetDeviceParameter(string Parameter);
+  string GetDevicePath();
   string m_DeviceID;    // Name and Port of the device
   DataLogger* m_Logger;
 private:
   string m_DevicePath;  // Path of the device in ev3dev filesystem
-  string GetDevicePath(Port_t Port);
+  void SetDevicePath(Port_t Port);
 };
 
 #endif /* EV3DEVICE_H_ */
