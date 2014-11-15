@@ -28,9 +28,20 @@ public:
   void SetMode(GyroMode_t Mode);
   void GetRateAndAngle(int &Rate, int &Angle);
   GyroMode_t GetMode();
-  Gyro (Port_t Port, GyroMode_t Mode, DataLogger* Logger=NULL);
+  Gyro (Port_t Port, GyroMode_t Mode, DataLogger* Logger=NULL,
+        int NumOfInStreams=0);
   virtual
   ~Gyro ();
 };
+
+class ServoGyro : private Gyro
+{
+public:
+  ServoGyro(Port_t Port);
+  virtual ~ServoGyro();
+  void GetRateAndAngle(int &Rate, int &Angle);
+};
+
+
 
 #endif /* GYRO_H_ */
