@@ -131,8 +131,10 @@ ServoGyro::~ServoGyro()
 void ServoGyro::GetRateAndAngle(int &Rate, int &Angle)
 {
   string readValue0, readValue1;
-  m_InStreams[0]->DirectIO::GetData(readValue0);
-  m_InStreams[1]->DirectIO::GetData(readValue1);
+
+  this->m_FastInputChannels->GetData(0,readValue0);
+  this->m_FastInputChannels->GetData(1,readValue1);
+
   Angle=atoi(readValue0.c_str());
   Rate=atoi(readValue1.c_str());
 }

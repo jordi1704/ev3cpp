@@ -21,7 +21,7 @@ enum io_t {IN, OUT};
 class DirectIO
 {
 public:
-  DirectIO (io_t IO, string Channel);
+  DirectIO (io_t IO=dirIO::IN, string Channel=NULL);
   virtual
   ~DirectIO ();
   ofstream* m_obuf;
@@ -30,9 +30,20 @@ public:
   void GetData(string &Data);
 private:
   io_t m_IOMode;
+  char* m_Channel;
 };
 }
 
+class InputStreams
+{
+public:
+  InputStreams(int NumOfChannels, string DevicePath);
+  ~InputStreams();
+  void GetData(int ChannelID, string &Data);
+  int m_NumOfChannels;
+private:
+  dirIO::DirectIO** m_Channels;
+};
 
 
 
