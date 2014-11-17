@@ -15,8 +15,9 @@ using namespace std;
 /*
  * Gyro constructor
  */
-Gyro::Gyro(Port_t Port, GyroMode_t Mode, DataLogger* Logger) :
-    Sensor(Port,Logger)
+Gyro::Gyro(Port_t Port, GyroMode_t Mode, DataLogger* Logger,
+           int NumOfInStreams) :
+    Sensor(Port,Logger,NumOfInStreams)
 {
   m_DeviceID=" GYRO:"+sPortName[Port];
   SetMode(Mode);
@@ -117,4 +118,24 @@ int Gyro::GetRate(){
     }
 }
 
+ServoGyro::ServoGyro(Port_t Port) : Gyro(Port,ANGLE_AND_RATE,NULL,2)
+{
+  m_DeviceID=" SERVO GYRO:"+sPortName[Port];
+}
+
+ServoGyro::~ServoGyro()
+{
+
+}
+
+void ServoGyro::GetRateAndAngle(int &Rate, int &Angle)
+{
+  string readValue0, readValue1;
+
+  this->m_FastInputChannels->GetData(0,readValue0);
+  this->m_FastInputChannels->GetData(1,readValue1);
+
+  Angle=atoi(readValue0.c_str());
+  Rate=atoi(readValue1.c_str());
+}
 

@@ -6,15 +6,23 @@
  */
 
 #include "Sensor.h"
+#include "cutils.h"
 
-Sensor::Sensor (Port_t Port, DataLogger* Logger) : Ev3Device(Port,Logger)
+Sensor::Sensor (Port_t Port, DataLogger* Logger, int NumOfFastInputChannels)
+  : Ev3Device(Port,Logger)
 {
   m_DeviceID=" SENSOR:"+sPortName[Port];
+  if(NumOfFastInputChannels){
+      m_FastInputChannels=new InputStreams(NumOfFastInputChannels,
+                                           this->GetDevicePath());
+  }
+  m_NumOfFastInputChannels=NumOfFastInputChannels;
   Trace(m_Logger,SENSOR_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 
 Sensor::~Sensor ()
 {
+  delete m_FastInputChannels;
   Trace(m_Logger,SENSOR_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
 

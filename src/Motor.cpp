@@ -135,3 +135,26 @@ void Motor::Stop()
   this->SetDeviceParameter(sState[STATE_MODES],sState[STOP]);
   Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR);
 }
+
+ServoMotor::ServoMotor(Port_t Port, DataLogger* Logger) : Motor(Port, Logger)
+{
+  m_DeviceID="SERVO MOTOR:"+sPortName[Port];
+  m_OutStream=new dirIO::DirectIO(dirIO::OUT,this->GetDevicePath()+"/"+
+                                  DUTY_CYCLE_SP);
+  string outChannel=GetDevicePath()+DUTY_CYCLE_SP;
+  Trace(m_Logger,MOTOR_DBG_LVL,outChannel);
+  this->Motor::SetRegulationMode(REG_OFF);
+  Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR);
+}
+
+ServoMotor::~ServoMotor()
+{
+  m_OutStream->~DirectIO();
+  delete m_OutStream;
+}
+
+void ServoMotor::SetSpeed(Power_t Power)
+{
+  m_OutStream->SendData(ToString(Power));
+  //Trace(m_Logger,MOTOR_DBG_LVL,m_DeviceID+FUNCT_STR+ToString(Power));
+}
