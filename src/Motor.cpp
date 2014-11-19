@@ -149,7 +149,6 @@ ServoMotor::ServoMotor(Port_t Port, DataLogger* Logger) : Motor(Port, Logger)
 
 ServoMotor::~ServoMotor()
 {
-  m_OutStream->~DirectIO();
   delete m_OutStream;
 }
 

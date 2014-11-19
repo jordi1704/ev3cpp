@@ -24,9 +24,12 @@
 
 using namespace std;
 
-float Kp=40.0f;
-float Kd=2.0f;
-float Offset=2.0f;
+float Kp=15.0f;
+float Kd=1.0f;
+float Ki=2.5f;
+float Kpos=0.2f;
+float deltaT=0.2;
+float Offset=18.0f;
 
 // 40 20 3 molt be
 // 30 10 5
@@ -40,6 +43,7 @@ bool t1s,t2s,t3s;
 int Rate, Angle;
 int Power;
 int Error;
+float acError=0;
 DataLogger* Logger;
 
 ServoMotor* MotorL;
@@ -60,7 +64,6 @@ void EmergencyExit()
       // stop motors, restore linux console mode and close logging
       MotorL->Stop();
       MotorR->Stop();
-      system ("/bin/stty cooked");
       delete myButton;
       End=true;
     }
@@ -69,7 +72,7 @@ void EmergencyExit()
 	break;
     }
     //cout << "monitoring button" << endl;
-    usleep(500*ONE_MILLISECOND);
+    usleep(ONE_SECOND);
   }
   cout << "Emergency Exit thread ended"<<endl;
 
@@ -83,19 +86,23 @@ int main()
 {
   t2s=true;
   //Logger=new DataLogger(EV3_LOG_FILE,DBG_LVL_0);
+  cout << "One" << endl;
 
   ServoGyro*  myGyro=new ServoGyro(IN_2);
   MotorL=new ServoMotor(OUT_A);
   MotorR=new ServoMotor(OUT_B);
 
+  cout << "Two" << endl;
 
   myGyro->GetRateAndAngle(Rate,Angle);
+  int initPosition=MotorL->GetPosition();
   int initAngle=Angle;
   MotorL->RunForever(0);
   MotorR->RunForever(0);
   usleep(ONE_SECOND);
 
-
+  int Position;
+  int ErrorPos;
   thread t3(EmergencyExit);
 
 
@@ -104,11 +111,21 @@ int main()
       //start=clock();
       myGyro->GetRateAndAngle(Rate,Angle);
       //cout << "Angle: " << ToString(Angle) << " Rate: "<< ToString(Rate) << endl;
-
+      Position=MotorL->GetPosition();
       Error = Angle-initAngle+Offset;
-      Power=Kp*Error+Kd*Rate;
+      acError=acError+Error*deltaT;
+      ErrorPos=Position-initPosition;
+      //cout << "Error Pos: " << ToString(ErrorPos)<<endl;
+      //cout << "Error Angle: " << ToString(Error) << endl;
+      //cout << "acError = " << ToString(acError)<< endl;
+      Power=Kp*Error+Kd*Rate+Ki*acError+Kpos*ErrorPos;
+      if ((Error<=1)&&(Error>=-1)) {
+	  Power=0;
+	  acError=0;
+      }
       if (Power>100) Power=100;
       if (Power<-100) Power= -100;
+      //cout << "Power: "<< ToString(Power) << endl;
 
       //cout << "Setting speed to motors: " << ToString(Power)<<endl;
       MotorL->SetSpeed(Power);
@@ -119,13 +136,17 @@ int main()
       if ((!t2s)) break;
   }
 
+  cout << "Three" << endl;
   MotorL->Stop();
   MotorR->Stop();
-
+  cout << "Four" << endl;
 
   delete MotorL;
+  cout << "Five" << endl;
   delete MotorR;
+  cout << "Six" << endl;
   delete myGyro;
+  cout << "Seven" << endl;
 
   exit(0);
 }
