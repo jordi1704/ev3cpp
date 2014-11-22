@@ -14,14 +14,14 @@ using namespace std;
 
 
 enum Port_t { INPUT_AUTO,
-	      OUTPUT_AUTO,
 	      INPUT_1, INPUT_2, INPUT_3, INPUT_4,
+	      OUTPUT_AUTO,
 	      OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D
               };
 
 const string sPort[10]={  "input_auto",
-			  "output_auto",
 			  "in1", "in2", "in3", "in4",
+			  "output_auto",
 			  "outA","outB","outC","outD"
 			};
 
@@ -34,16 +34,16 @@ public:
   bool m_Connected;
   int m_DeviceIndex;
   virtual bool Connect(Port_t Port) = 0;
-  virtual void SetProperty(string Property, string Value)=0;
-  virtual void SetProperty(string Property, int Value)=0;
-  virtual bool GetConnectedStatus()=0;
-  virtual int  GetDeviceIndex()=0;
+//  virtual void SetProperty(string Property, string Value)=0;
+//  virtual void SetProperty(string Property, int Value)=0;
+//  virtual bool IsConnected()=0;
+//  virtual int  GetDeviceIndex()=0;
 };
 
 class Sensor : public IODevice
 {
 public:
-  Sensor(Port_t Port, string Types[], int NumTypes);
+  Sensor(Port_t Port=INPUT_AUTO, string Types[]=NULL, int NumTypes=0);
   virtual
   ~Sensor();
   bool Connect(Port_t Port=INPUT_AUTO);

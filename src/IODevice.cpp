@@ -30,7 +30,7 @@ IODevice::~IODevice ()
 Sensor::Sensor(Port_t Port, string Types[], int NumTypes)
   : IODevice(Port)
 {
-  m_Connected=this->IODevice::Connect(Port);
+  m_Connected=this->Connect(Port);
 }
 
 bool Sensor::Connect(Port_t Port)
@@ -39,16 +39,22 @@ bool Sensor::Connect(Port_t Port)
   struct dirent* DirectoryEntry;
   string sDeviceType="sensor";
   string sDevicePath=SENSOR_PATH;
-  ifstream* inf;
+  ifstream* m_ibuf;
   string sInputPort;
 
+  Directory=opendir(sDevicePath.c_str());
+  cout << "Open" <<endl;
   while((DirectoryEntry=readdir(Directory))!=NULL){
       if(strstr(DirectoryEntry->d_name,sDeviceType.c_str())){
 	  // Store file path
 	  m_DevicePath=sDevicePath+string(DirectoryEntry->d_name);
+	  cout << m_DevicePath << endl;
 	  // Get Port string
-	  inf->open(m_DevicePath+"/port",ios::in);
-	  *inf >> sInputPort;
+	  m_ibuf=new ifstream();
+	  m_ibuf->open((m_DevicePath+"/port_name").c_str(),ios::in);
+	  *m_ibuf >> sInputPort;
+	  m_ibuf->close();
+	  cout << sInputPort << endl;
 	  switch (Port) {
 	    case INPUT_AUTO:
 	      for (int port = INPUT_1; port <= INPUT_4; ++port) {
@@ -81,6 +87,8 @@ bool Sensor::Connect(Port_t Port)
   return false;
 };
 
+Sensor::~Sensor(){
+};
 
 
 
