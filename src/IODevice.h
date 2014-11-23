@@ -9,6 +9,7 @@
 #define IODEVICE_H_
 
 #include <string>
+#include "DirectIO.h"
 
 using namespace std;
 
@@ -25,6 +26,17 @@ const string sPort[10]={  "input_auto",
 			  "outA","outB","outC","outD"
 			};
 
+// Only EV3 sensors are supported, no NXT no Hi-Tech
+enum Ev3Sensor_t {EV3_TOUCH_SENSOR,
+                  EV3_IR_SENSOR,
+                  NUM_OF_SUPPORTED_SENSORS
+		 };
+
+const string sEv3Sensor[NUM_OF_SUPPORTED_SENSORS]={"lego-ev3-touch",
+                            "ev3-uart-33"
+			    };
+
+
 class IODevice
 {
 public:
@@ -33,22 +45,45 @@ public:
   ~IODevice ();
   bool m_Connected;
   int m_DeviceIndex;
-  virtual bool Connect(Port_t Port) = 0;
-//  virtual void SetProperty(string Property, string Value)=0;
-//  virtual void SetProperty(string Property, int Value)=0;
-//  virtual bool IsConnected()=0;
-//  virtual int  GetDeviceIndex()=0;
+  virtual bool Connect(Port_t Port, const string Types[], const int NumTypes) = 0;
+  void WritePropertyFile(string Attribute, string Value);
+protected:
+  string ReadPropertyFileStr(string File);
+  int ReadPropertyFileInt(string File);
 };
 
+/*
+ * Abstract class to manage any sensor
+ */
 class Sensor : public IODevice
 {
 public:
-  Sensor(Port_t Port=INPUT_AUTO, string Types[]=NULL, int NumTypes=0);
+  Sensor(Port_t Port=INPUT_AUTO, const string Types[]=sEv3Sensor, int const NumTypes=NUM_OF_SUPPORTED_SENSORS);
   virtual
   ~Sensor();
-  bool Connect(Port_t Port=INPUT_AUTO);
+  bool Connect(Port_t Port=INPUT_AUTO, const string Types[]=sEv3Sensor, const int NumTypes=NUM_OF_SUPPORTED_SENSORS);
+  int GetValue(int ValueIndex);
+  float GetFloatValue(int ValueIndex);
+  void SetMode(string Mode);
+  virtual void InitSensor()=0;
+  string m_PortName;
+  int m_NumValues;
+  string m_TypeName;
+  string m_Mode;
+  string m_Modes;
 private:
   string m_DevicePath;
+  InputStreams* m_SensorValues;
+};
+
+class Touch : private Sensor
+{
+public:
+  Touch (Port_t Port=INPUT_AUTO);
+  virtual
+  ~Touch ();
+  void InitSensor();
+  bool IsPressed();
 };
 
 

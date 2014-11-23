@@ -1,6 +1,6 @@
 
 #include "IODevice.h"
-#include "cutils.h"
+//#include "cutils.h"
 
 #include <iostream>
 
@@ -8,13 +8,15 @@
 int main()
 {
 
-  Sensor* Touch=new Sensor();
+Touch* myTouch=new Touch();
 
-  if(Touch->m_Connected) {
-      cout << "Connected with index " << ToString(Touch->m_DeviceIndex) << endl;
-  } else {
-      cout << "Not connected"<<endl;
-  }
+while(1){
+    if(myTouch->IsPressed()) {
+	cout << "Pressed"<<endl;
+    } else cout << "Released"<<endl;
+}
+
+
 
   return(0);
 }
