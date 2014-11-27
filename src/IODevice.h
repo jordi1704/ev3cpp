@@ -9,7 +9,7 @@
 #define IODEVICE_H_
 
 #include <string>
-#include "DirectIO.h"
+#include "FileIOChannel.h"
 
 using namespace std;
 
@@ -26,15 +26,17 @@ const string sPort[10]={  "input_auto",
 			  "outA","outB","outC","outD"
 			};
 
-// Only EV3 sensors are supported, no NXT no Hi-Tech
+// Only EV3 sensors are supported
 enum Ev3Sensor_t {EV3_TOUCH_SENSOR,
                   EV3_IR_SENSOR,
+                  EV3_GYRO_SENSOR,
                   NUM_OF_SUPPORTED_SENSORS
 		 };
 
-const string sEv3Sensor[NUM_OF_SUPPORTED_SENSORS]={"lego-ev3-touch",
-                            "ev3-uart-33"
-			    };
+const string sEv3Sensor[]={"lego-ev3-touch",
+			   "ev3-uart-33"   ,
+			   "ev3-uart-32"
+			  };
 
 
 class IODevice
@@ -43,13 +45,12 @@ public:
   IODevice (Port_t Port);
   virtual
   ~IODevice ();
-  bool m_Connected;
-  int m_DeviceIndex;
   virtual bool Connect(Port_t Port, const string Types[], const int NumTypes) = 0;
   void WritePropertyFile(string Attribute, string Value);
+  bool m_Connected;
+  int  m_DeviceIndex;
 protected:
-  string ReadPropertyFileStr(string File);
-  int ReadPropertyFileInt(string File);
+  string ReadPropertyFile(string File);
 };
 
 /*
@@ -67,13 +68,13 @@ public:
   void SetMode(string Mode);
   virtual void InitSensor()=0;
   string m_PortName;
-  int m_NumValues;
   string m_TypeName;
   string m_Mode;
   string m_Modes;
+  int m_NumValues;
 private:
   string m_DevicePath;
-  InputStreams* m_SensorValues;
+  InputChannels* m_SensorValues;
 };
 
 class Touch : private Sensor

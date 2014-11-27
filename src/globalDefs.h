@@ -12,9 +12,5 @@
 #define ONE_MILLISECOND 1000
 
 #define SENSOR_PATH   		"/sys/class/msensor/"
-#define MAX_FILENAME_LENGTH 	256
-
-#define EV3_LOG_FILE "ev3.log"
-
 
 #endif /* GLOBALDEFS_H_ */

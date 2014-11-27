@@ -23,38 +23,32 @@ IODevice::IODevice (Port_t Port)
 
 IODevice::~IODevice ()
 {
-  // TODO Auto-generated destructor stub
 }
 
-string IODevice::ReadPropertyFileStr(string Attribute)
+string IODevice::ReadPropertyFile(string Attribute)
 {
-  ifstream* ibuf=new ifstream();
-  string sAttributeValue;
-  ibuf->open(Attribute.c_str(),ios::in);
-  *ibuf >> sAttributeValue;
-  ibuf->close();
-  delete ibuf;
-  return sAttributeValue;
+  // Allow reading properties only for non-enumerated or connected devices
+  if(!m_DeviceIndex || m_Connected){
+    string Data;
+    FileIOChannel PropFile(Attribute);
+    PropFile.GetData(Data);
+    return Data;
+  } else {
+      cout << "***ERROR*** Trying to read from an unconnected device" << endl;
+      exit(-1);
+  }
 }
 
-int IODevice::ReadPropertyFileInt(string Attribute)
-{
-  ifstream* ibuf=new ifstream();
-  string sAttributeValue;
-  ibuf->open(Attribute.c_str(),ios::in);
-  *ibuf >> sAttributeValue;
-  ibuf->close();
-  delete ibuf;
-  return atoi(sAttributeValue.c_str());
-}
-
-//TODO check if not possible to open file streams
 void IODevice::WritePropertyFile(string Attribute, string Value)
 {
-  ofstream* obuf=new ofstream();
-  obuf->open(Attribute.c_str(),ios::out);
-  *obuf << Value;
-  obuf->close();
+  // Allow writing properties only for connected devices
+  if(m_Connected){
+    FileIOChannel PropFile(Attribute);
+    PropFile.SendData(Value);
+  } else {
+    cout << "***ERROR*** Trying to write to an unconnected device" << endl;
+    exit(-1);
+  }
 }
 
 Sensor::Sensor(Port_t Port, const string Types[], const int NumTypes)
@@ -67,7 +61,7 @@ Sensor::Sensor(Port_t Port, const string Types[], const int NumTypes)
   m_Mode="";
   m_Connected=this->Connect(Port, Types, NumTypes);
   if(m_Connected){
-      m_SensorValues=new InputStreams(m_NumValues,m_DevicePath);
+      m_SensorValues=new InputChannels(m_NumValues,m_DevicePath);
   }
 }
 
@@ -89,7 +83,6 @@ void Sensor::SetMode(string Mode)
   m_Connected=false;
 }
 
-//TODO carregar-se NumTypes
 bool Sensor::Connect(Port_t Port, const string Types[], const int NumTypes)
 {
   DIR *Directory;
@@ -100,7 +93,7 @@ bool Sensor::Connect(Port_t Port, const string Types[], const int NumTypes)
   string sSensorType;
 
   Directory=opendir(sDevicePath.c_str());
-  cout << "Open" <<endl;
+
   // Enumerate devices
   while((DirectoryEntry=readdir(Directory))!=NULL){
 
@@ -108,25 +101,21 @@ bool Sensor::Connect(Port_t Port, const string Types[], const int NumTypes)
 
 	  // Store file path
 	  m_DevicePath=sDevicePath+string(DirectoryEntry->d_name);
-	  cout << m_DevicePath << endl;
 
 	  //Determine port
-	  m_PortName=ReadPropertyFileStr(m_DevicePath+"/port_name");
+	  m_PortName=ReadPropertyFile(m_DevicePath+"/port_name");
 
 	  // Determine sensor type
-	  m_TypeName=ReadPropertyFileStr(m_DevicePath+"/name");
+	  m_TypeName=ReadPropertyFile(m_DevicePath+"/name");
 
 	  // Determine Mode
-	  m_Mode=ReadPropertyFileStr(m_DevicePath+"/mode");
+	  m_Mode=ReadPropertyFile(m_DevicePath+"/mode");
 
 	  // Determine num of values
-	  m_NumValues=ReadPropertyFileInt(m_DevicePath+"/num_values");
+	  m_NumValues=atoi(ReadPropertyFile(m_DevicePath+"/num_values").c_str());
 
 	  // Determine sensor modes
-	  m_Modes=ReadPropertyFileStr(m_DevicePath+"/modes");
-
-	  cout << sInputPort << endl;
-	  cout << sSensorType << endl;
+	  m_Modes=ReadPropertyFile(m_DevicePath+"/modes");
 
 	  // Match sensor port and type
 	  for (int i = 0; i < NumTypes; ++i) {
@@ -173,7 +162,6 @@ int Sensor::GetValue(int ValueIndex)
 {
   string sResult;
   m_SensorValues->GetData(ValueIndex,sResult);
-  //TODO modify InputStreams to provide raw data and avoid string conversions
   return atoi(sResult.c_str());
 }
 
@@ -190,6 +178,7 @@ Touch::Touch(Port_t Port) : Sensor(Port,&sEv3Sensor[EV3_TOUCH_SENSOR],1)
 {
   this->InitSensor();
 };
+
 Touch::~Touch (){};
 
 void Touch::InitSensor()
