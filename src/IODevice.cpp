@@ -74,13 +74,15 @@ void Sensor::SetMode(string Mode)
   stringstream ssAllowedModes(m_Modes);
   string sAllowedMode;
   while(ssAllowedModes >> sAllowedMode){
-      if(Mode==sAllowedMode) IODevice::WritePropertyFile(m_DevicePath+"/mode",
-                                                         Mode);
+      if(Mode==sAllowedMode) {
+	  IODevice::WritePropertyFile(m_DevicePath+"/mode",Mode);
       return;
+      }
   }
   // If wrong mode set, disconnect sensor
   cout << "Error seting mode " << Mode << endl;
   m_Connected=false;
+  exit(-1);
 }
 
 bool Sensor::Connect(Port_t Port, const string Types[], const int NumTypes)
@@ -88,7 +90,7 @@ bool Sensor::Connect(Port_t Port, const string Types[], const int NumTypes)
   DIR *Directory;
   struct dirent* DirectoryEntry;
   string sDeviceType="sensor";
-  string sDevicePath=SENSOR_PATH;
+  const string sDevicePath=SENSOR_PATH;
   string sInputPort;
   string sSensorType;
 
@@ -101,6 +103,7 @@ bool Sensor::Connect(Port_t Port, const string Types[], const int NumTypes)
 
 	  // Store file path
 	  m_DevicePath=sDevicePath+string(DirectoryEntry->d_name);
+
 
 	  //Determine port
 	  m_PortName=ReadPropertyFile(m_DevicePath+"/port_name");
@@ -119,8 +122,7 @@ bool Sensor::Connect(Port_t Port, const string Types[], const int NumTypes)
 
 	  // Match sensor port and type
 	  for (int i = 0; i < NumTypes; ++i) {
-	    cout << "Comparing " << m_TypeName << " with "<< Types[i] << endl;
-	    if (m_TypeName.find(Types[i])!=m_TypeName.npos) {
+	    if (m_TypeName.find(Types[i])!=std::string::npos) {
 		switch (Port) {
 		  case INPUT_AUTO:
 		    for (int port = INPUT_1; port <= INPUT_4; ++port) {
@@ -189,6 +191,23 @@ void Touch::InitSensor()
 bool Touch::IsPressed()
 {
   return (Sensor::GetValue(0)==1);
+}
+
+Gyro::Gyro(Port_t Port) : Sensor(Port,&sEv3Sensor[EV3_GYRO_SENSOR],1)
+{
+  this->InitSensor();
+}
+
+Gyro::~Gyro (){};
+
+void Gyro::InitSensor()
+{
+  Sensor::SetMode("GYRO-RATE");
+}
+
+short int Gyro::GetRotationalSpeed()
+{
+  return Sensor::GetValue(0);
 }
 
 

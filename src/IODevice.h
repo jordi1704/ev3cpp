@@ -83,8 +83,20 @@ public:
   Touch (Port_t Port=INPUT_AUTO);
   virtual
   ~Touch ();
-  void InitSensor();
   bool IsPressed();
+private:
+  void InitSensor();
+};
+
+class Gyro : private Sensor
+{
+public:
+  Gyro (Port_t Port=INPUT_AUTO);
+  virtual
+  ~Gyro ();
+  short int GetRotationalSpeed();
+private:
+  void InitSensor();
 };
 
 
