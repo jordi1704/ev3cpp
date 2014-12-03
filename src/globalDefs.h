@@ -11,7 +11,4 @@
 #define ONE_SECOND 1000000
 #define ONE_MILLISECOND 1000
 
-#define EV3_LOG_FILE "ev3.log"
-
-
 #endif /* GLOBALDEFS_H_ */

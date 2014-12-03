@@ -13,36 +13,29 @@
 
 using namespace std;
 
-namespace dirIO
-{
-
-enum io_t {IN, OUT};
-
-class DirectIO
+class FileIOChannel
 {
 public:
-  DirectIO (io_t IO=dirIO::IN, string Channel=NULL);
+  FileIOChannel (string Channel);
   virtual
-  ~DirectIO ();
+  ~FileIOChannel ();
+  void SendData (string Data, bool LeaveOpen=false);
+  void GetData(string &Data);
   ofstream* m_obuf;
   ifstream* m_ibuf;
-  void SendData (string Data);
-  void GetData(string &Data);
 private:
-  io_t m_IOMode;
   char* m_Channel;
 };
-}
 
-class InputStreams
+class InputChannels
 {
 public:
-  InputStreams(int NumOfChannels, string DevicePath);
-  ~InputStreams();
+  InputChannels(int NumOfChannels, string DevicePath);
+  ~InputChannels();
   void GetData(int ChannelID, string &Data);
   int m_NumOfChannels;
 private:
-  dirIO::DirectIO** m_Channels;
+  FileIOChannel** m_Channels;
 };
 
 

@@ -1,32 +1,39 @@
 
-#include "Tacho.h"
-#include "Touch.h"
-#include "Color.h"
+#include "IODevice.h"
+#include "cutils.h"
 
+#include <iostream>
+#include <string.h>
+#include <stdlib.h>
 
 int main()
 {
-  // Create a data logger to dump activity traces over 'ev3.log' file
-  DataLogger* myLogger=new DataLogger("ev3.log",DBG_LVL_0);
 
-  // Create a tacho motor connected on output port A and get traces
-  Tacho* myMotor=new Tacho(OUT_A,myLogger);
+Touch* myTouch=new Touch();
+Motor* myMotor=new Motor();
+time_t start,end;
 
-  // Create a touch sensor on input port 4. As no logger pointer is specified,
-  // there will be no logged info about touch sensor
-  Touch* myTouch=new Touch(IN_4);
+start=clock();
+WaitForMilliseconds(1000);
+end=clock();
+cout << to_string((end-start)/675547.0f*1000000)<<endl;
 
-  // Create a light sensor on input port 3
-  LightSensor* myLightSensor=new LightSensor(IN_3);
 
-  // Start motor at power 50%
-  myMotor->RunForever(50);
+//while(0){
+//    start=clock();
+//    if(myTouch->IsPressed()) {
+//	end=clock();
+//	cout << to_string((end-start)/675356.0f*1000000)<<endl;
+//	cout << "Pressed"<<endl;
+//    } else {
+//	end=clock();
+//	cout << to_string((end-start)/675356.0f*1000000)<<endl;
+//	cout << "Released"<<endl;
+//
+//    }
+//}
 
-  // Wait until touch sensor is pressed or room light is off to stop the motor
-  while(!myTouch->IsPressed() && (myLightSensor->GetAmbient()!=0));
 
-  // Stop the motor
-  myMotor->Stop();
 
   return(0);
 }
