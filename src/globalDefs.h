@@ -11,6 +11,4 @@
 #define ONE_SECOND 1000000
 #define ONE_MILLISECOND 1000
 
-#define SENSOR_PATH   		"/sys/class/msensor/"
-
 #endif /* GLOBALDEFS_H_ */
