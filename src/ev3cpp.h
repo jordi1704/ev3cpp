@@ -8,7 +8,6 @@
 #ifndef IODEVICE_H_
 #define IODEVICE_H_
 
-#include <string>
 #include "FileIOChannel.h"
 
 #define SENSOR_PATH   		"/sys/class/msensor/"
@@ -124,6 +123,7 @@ public:
   void Reset();
   bool Connect(Port_t Port=OUTPUT_AUTO, const string Types[]=sEv3Motor,
                  const int NumTypes=NUM_OF_SUPPORTED_MOTORS);
+  virtual void InitMotor()=0;
   int m_DutyCycle;
   int m_DutyCycleSP;
   string m_PortName;
@@ -146,6 +146,19 @@ public:
   string* m_StopModes;
   int m_TimeSP;
   string m_Type;
+};
+
+class ServoMotor : private Motor
+{
+public:
+  ServoMotor(Port_t Port=OUTPUT_AUTO);
+  virtual
+  ~ServoMotor();
+  void SetPower(int Power);
+  int GetPosition();
+private:
+  void InitMotor();
+  FileIOChannel* SpeedFastUpdateChannel;
 };
 
 

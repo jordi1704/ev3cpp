@@ -7,7 +7,6 @@
 
 #include <FileIOChannel.h>
 #include <iostream>
-#include "cutils.h"
 
 
 FileIOChannel::FileIOChannel(string Channel)
@@ -16,7 +15,7 @@ FileIOChannel::FileIOChannel(string Channel)
   m_ibuf=new ifstream();
   m_Channel=new char[Channel.length()+1];
   if(!m_Channel || !m_obuf || !m_ibuf) {
-      cout << "***ERROR*** Unable create ileIOChannel" << endl;
+      cout << "***ERROR*** Unable create FileIOChannel" << endl;
       exit(-1);
   }
   strcpy(m_Channel,Channel.c_str());
@@ -50,8 +49,9 @@ void FileIOChannel::GetData(string &Data)
   string sDest="";
   string sOrig="";
   m_ibuf->open(m_Channel,ios::in);
+  *m_ibuf >> sDest;
   while(*m_ibuf >> sOrig){
-      sDest=sDest+sOrig+" ";
+      sDest=sDest+" "+sOrig;
   }
   Data=sDest;
   m_ibuf->close();

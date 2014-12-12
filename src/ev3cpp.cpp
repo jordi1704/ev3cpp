@@ -5,12 +5,9 @@
  *      Author: jordi
  */
 
-#include "IODevice.h"
-#include "globalDefs.h"
+#include "ev3cpp.h"
 #include <dirent.h>
-#include <fstream>
 #include <iostream>
-#include <string.h>
 #include <sstream>
 #include <vector>
 
@@ -31,7 +28,7 @@ string IODevice::ReadPropertyFile(string Attribute)
   // Allow reading properties only for non-enumerated or connected devices
   if(!m_DeviceIndex || m_Connected){
     string Data;
-    FileIOChannel PropFile(Attribute);
+    FileIOChannel PropFile(m_DevicePath+"/"+Attribute);
     PropFile.GetData(Data);
     return Data;
   } else {
@@ -44,7 +41,7 @@ void IODevice::WritePropertyFile(string Attribute, string Value)
 {
   // Allow writing properties only for connected devices
   if(m_Connected){
-    FileIOChannel PropFile(Attribute);
+    FileIOChannel PropFile(m_DevicePath+"/"+Attribute);
     PropFile.SendData(Value);
   } else {
     cout << "***ERROR*** Trying to write to an unconnected device" << endl;
@@ -76,7 +73,7 @@ void Sensor::SetMode(string Mode)
   string sAllowedMode;
   while(ssAllowedModes >> sAllowedMode){
       if(Mode==sAllowedMode) {
-	  IODevice::WritePropertyFile(m_DevicePath+"/mode",Mode);
+	  IODevice::WritePropertyFile("mode",Mode);
       return;
       }
   }
@@ -107,19 +104,19 @@ bool Sensor::Connect(Port_t Port, const string Types[], const int NumTypes)
 
 
 	  //Determine port
-	  m_PortName=ReadPropertyFile(m_DevicePath+"/port_name");
+	  m_PortName=ReadPropertyFile("port_name");
 
 	  // Determine sensor type
-	  m_TypeName=ReadPropertyFile(m_DevicePath+"/name");
+	  m_TypeName=ReadPropertyFile("name");
 
 	  // Determine Mode
-	  m_Mode=ReadPropertyFile(m_DevicePath+"/mode");
+	  m_Mode=ReadPropertyFile("mode");
 
 	  // Determine num of values
-	  m_NumValues=atoi(ReadPropertyFile(m_DevicePath+"/num_values").c_str());
+	  m_NumValues=atoi(ReadPropertyFile("num_values").c_str());
 
 	  // Determine sensor modes
-	  m_Modes=ReadPropertyFile(m_DevicePath+"/modes");
+	  m_Modes=ReadPropertyFile("modes");
 
 	  // Match sensor port and type
 	  for (int i = 0; i < NumTypes; ++i) {
@@ -131,7 +128,8 @@ bool Sensor::Connect(Port_t Port, const string Types[], const int NumTypes)
 			    m_DeviceIndex=port;
 			}
 		    }
-		    cout << "Connected type " << m_TypeName << " on " << m_PortName<< endl;
+		    cout << "Connected type " << m_TypeName << " on "
+			 << m_PortName<< endl;
 		    return true;
 		    break;
 		  case INPUT_1:
@@ -140,14 +138,17 @@ bool Sensor::Connect(Port_t Port, const string Types[], const int NumTypes)
 		  case INPUT_4:
 		    if(m_PortName==sPort[Port]){
 			m_DeviceIndex=Port;
-			cout << "Connected type " << m_TypeName << " on " << m_PortName<< endl;
+			cout << "Connected type " << m_TypeName << " on "
+			     << m_PortName<< endl;
 			return true;
 		    } else {
-			cout << "Sensor is available but not connected to " << sPort[Port] << endl;
+			cout << "Sensor is available but not connected to "
+			     << sPort[Port] << endl;
 			return false;
 		    }
 		  default:
-		    cout << "Sensor can only be connected to input port" << endl;
+		    cout << "Sensor can only be connected to input port"
+		         << endl;
 		    return false;
 		    break;
 		}
@@ -227,28 +228,29 @@ Motor::Motor(Port_t Port, const string Type) : IODevice(Port)
       *sSupportedMotorTypes=Type;
       nNumOfSupportedMotorTypes=1;
   }
-  m_Connected=this->Connect(Port,sSupportedMotorTypes,nNumOfSupportedMotorTypes);
-  delete [] sSupportedMotorTypes;
+  m_Connected=this->Connect(Port,sSupportedMotorTypes,
+                            nNumOfSupportedMotorTypes);
+  delete sSupportedMotorTypes;
   if (m_Connected){
-      m_DutyCycle=atoi(ReadPropertyFile(m_DevicePath+"/duty_cycle").c_str());
-      m_DutyCycleSP=atoi(ReadPropertyFile(m_DevicePath+"/duty_cycle_sp").c_str());
-      m_Position=atoi(ReadPropertyFile(m_DevicePath+"/position").c_str());
-      m_PositionMode=ReadPropertyFile(m_DevicePath+"/position_mode");
-      m_PositionSP=atoi(ReadPropertyFile(m_DevicePath+"/position_sp").c_str());
-      m_PulsesPerSecond=atoi(ReadPropertyFile(m_DevicePath+"/pulses_per_second").c_str());
-      m_PulsesPerSecondSP=atoi(ReadPropertyFile(m_DevicePath+"/pulses_per_second_sp").c_str());
-      m_RampUpSP=atoi(ReadPropertyFile(m_DevicePath+"/ramp_up_sp").c_str());
-      m_RampDownSP=atoi(ReadPropertyFile(m_DevicePath+"/ramp_down_sp").c_str());
-      m_RegulationMode=ReadPropertyFile(m_DevicePath+"/regulation_mode");
-      m_Run=atoi(ReadPropertyFile(m_DevicePath+"/run").c_str());
-      m_RunMode=ReadPropertyFile(m_DevicePath+"/run_mode");
-      m_SpeedRegulationP=atoi(ReadPropertyFile(m_DevicePath+"/speed_regulation_P").c_str());
-      m_SpeedRegulationI=atoi(ReadPropertyFile(m_DevicePath+"/speed_regulation_I").c_str());
-      m_SpeedRegulationK=atoi(ReadPropertyFile(m_DevicePath+"/speed_regulation_K").c_str());
-      m_SpeedRegulationD=atoi(ReadPropertyFile(m_DevicePath+"/speed_regulation_D").c_str());
-      m_State=ReadPropertyFile(m_DevicePath+"/state");
-      m_StopMode=ReadPropertyFile(m_DevicePath+"/stop_mode");
-      string sAllowedModes=ReadPropertyFile(m_DevicePath+"/stop_modes");
+      m_DutyCycle=atoi(ReadPropertyFile("duty_cycle").c_str());
+      m_DutyCycleSP=atoi(ReadPropertyFile("duty_cycle_sp").c_str());
+      m_Position=atoi(ReadPropertyFile("position").c_str());
+      m_PositionMode=ReadPropertyFile("position_mode");
+      m_PositionSP=atoi(ReadPropertyFile("position_sp").c_str());
+      m_PulsesPerSecond=atoi(ReadPropertyFile("pulses_per_second").c_str());
+      m_PulsesPerSecondSP=atoi(ReadPropertyFile("pulses_per_second_sp").c_str());
+      m_RampUpSP=atoi(ReadPropertyFile("ramp_up_sp").c_str());
+      m_RampDownSP=atoi(ReadPropertyFile("ramp_down_sp").c_str());
+      m_RegulationMode=ReadPropertyFile("regulation_mode");
+      m_Run=atoi(ReadPropertyFile("run").c_str());
+      m_RunMode=ReadPropertyFile("run_mode");
+      m_SpeedRegulationP=atoi(ReadPropertyFile("speed_regulation_P").c_str());
+      m_SpeedRegulationI=atoi(ReadPropertyFile("speed_regulation_I").c_str());
+      m_SpeedRegulationK=atoi(ReadPropertyFile("speed_regulation_K").c_str());
+      m_SpeedRegulationD=atoi(ReadPropertyFile("speed_regulation_D").c_str());
+      m_State=ReadPropertyFile("state");
+      m_StopMode=ReadPropertyFile("stop_mode");
+      string sAllowedModes=ReadPropertyFile("stop_modes");
       stringstream ssModes(sAllowedModes);
       string sMode;
       vector<string> str;
@@ -259,7 +261,7 @@ Motor::Motor(Port_t Port, const string Type) : IODevice(Port)
       for (int i = 0; i < str.size(); ++i) {
 	m_StopModes[i]=str[i];
       }
-      m_TimeSP=atoi(ReadPropertyFile(m_DevicePath+"/time_sp").c_str());
+      m_TimeSP=atoi(ReadPropertyFile("time_sp").c_str());
   }
 }
 
@@ -288,14 +290,14 @@ bool Motor::Connect(Port_t Port, const string Types[], const int NumTypes)
 	  m_DevicePath=sDevicePath+string(DirectoryEntry->d_name);
 
 	  //Determine port
-	  m_PortName=ReadPropertyFile(m_DevicePath+"/port_name");
+	  m_PortName=ReadPropertyFile("port_name");
 
 	  // Determine motor type
-	  m_Type=ReadPropertyFile(m_DevicePath+"/type");
+	  m_Type=ReadPropertyFile("type");
 
 	  // Match motor port and type
 	  for (int i = 0; i < NumTypes; ++i) {
-	    if (m_Type.find(Types[i])!=std::string::npos) {
+	    if (m_Type==Types[i]){
 		switch (Port) {
 		  case OUTPUT_AUTO:
 		    for (int port = OUTPUT_A; port <= OUTPUT_D; ++port) {
@@ -303,7 +305,8 @@ bool Motor::Connect(Port_t Port, const string Types[], const int NumTypes)
 			    m_DeviceIndex=port;
 			}
 		    }
-		    cout << "Connected type " << m_Type << " on " << m_PortName<< endl;
+		    cout << "Connected type " << m_Type << " on " << m_PortName
+			 << endl;
 		    return true;
 		    break;
 		  case OUTPUT_A:
@@ -312,14 +315,17 @@ bool Motor::Connect(Port_t Port, const string Types[], const int NumTypes)
 		  case OUTPUT_D:
 		    if(m_PortName==sPort[Port]){
 			m_DeviceIndex=Port;
-			cout << "Connected type " << m_Type << " on " << m_PortName<< endl;
+			cout << "Connected type " << m_Type << " on "
+			     << m_PortName<< endl;
 			return true;
 		    } else {
-			cout << "Motor is available but not connected to " << sPort[Port] << endl;
+			cout << "Motor is available but not connected to "
+			     << sPort[Port] << endl;
 			return false;
 		    }
 		  default:
-		    cout << "Motor can only be connected to output port" << endl;
+		    cout << "Motor can only be connected to output port"
+		         << endl;
 		    return false;
 		    break;
 		}
@@ -335,3 +341,27 @@ void Motor::Reset()
 {
   this->WritePropertyFile("reset","1");
 }
+
+ServoMotor::ServoMotor(Port_t Port) : Motor(Port,"tacho")
+{
+  SpeedFastUpdateChannel=new FileIOChannel(m_DevicePath+"/duty_cycle_sp");
+  ServoMotor::InitMotor();
+}
+
+ServoMotor::~ServoMotor()
+{
+  delete SpeedFastUpdateChannel;
+}
+
+void ServoMotor::InitMotor()
+{
+  this->WritePropertyFile("regulation_mode","off");
+  this->WritePropertyFile("run","1");
+}
+
+void ServoMotor::SetPower(int Power)
+{
+  int nValidDutyCycle=(Power<100) ? Power : 100;
+  SpeedFastUpdateChannel->SendData(to_string(nValidDutyCycle),false);
+}
+

@@ -1,5 +1,5 @@
 
-#include "IODevice.h"
+#include "ev3cpp.h"
 #include "cutils.h"
 
 #include <iostream>
@@ -9,31 +9,23 @@
 int main()
 {
 
-Touch* myTouch=new Touch();
-Motor* myMotor=new Motor();
-time_t start,end;
+  // Create a touch sensor
+  Touch* myTouch=new Touch();
 
-start=clock();
-WaitForMilliseconds(1000);
-end=clock();
-cout << to_string((end-start)/675547.0f*1000000)<<endl;
+  // Create a motor
+  ServoMotor* myMotor=new ServoMotor();
 
+  // Set motor power to 50%
+  myMotor->SetPower(50);
 
-//while(0){
-//    start=clock();
-//    if(myTouch->IsPressed()) {
-//	end=clock();
-//	cout << to_string((end-start)/675356.0f*1000000)<<endl;
-//	cout << "Pressed"<<endl;
-//    } else {
-//	end=clock();
-//	cout << to_string((end-start)/675356.0f*1000000)<<endl;
-//	cout << "Released"<<endl;
-//
-//    }
-//}
+  // Wait until touch sensor is pressed
+  while(!myTouch->IsPressed())
+    {
+      WaitForMilliseconds(100);
+    }
 
-
+  // Stop motor
+  myMotor->SetPower(0);
 
   return(0);
 }
