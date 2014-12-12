@@ -1,32 +1,31 @@
 
-#include "Tacho.h"
-#include "Touch.h"
-#include "Color.h"
+#include "ev3cpp.h"
+#include "cutils.h"
 
+#include <iostream>
+#include <string.h>
+#include <stdlib.h>
 
 int main()
 {
-  // Create a data logger to dump activity traces over 'ev3.log' file
-  DataLogger* myLogger=new DataLogger("ev3.log",DBG_LVL_0);
 
-  // Create a tacho motor connected on output port A and get traces
-  Tacho* myMotor=new Tacho(OUT_A,myLogger);
+  // Create a touch sensor
+  Touch* myTouch=new Touch();
 
-  // Create a touch sensor on input port 4. As no logger pointer is specified,
-  // there will be no logged info about touch sensor
-  Touch* myTouch=new Touch(IN_4);
+  // Create a motor
+  ServoMotor* myMotor=new ServoMotor();
 
-  // Create a light sensor on input port 3
-  LightSensor* myLightSensor=new LightSensor(IN_3);
+  // Set motor power to 50%
+  myMotor->SetPower(50);
 
-  // Start motor at power 50%
-  myMotor->RunForever(50);
+  // Wait until touch sensor is pressed
+  while(!myTouch->IsPressed())
+    {
+      WaitForMilliseconds(100);
+    }
 
-  // Wait until touch sensor is pressed or room light is off to stop the motor
-  while(!myTouch->IsPressed() && (myLightSensor->GetAmbient()!=0));
-
-  // Stop the motor
-  myMotor->Stop();
+  // Stop motor
+  myMotor->SetPower(0);
 
   return(0);
 }
